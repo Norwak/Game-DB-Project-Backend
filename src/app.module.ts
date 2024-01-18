@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GamesController } from './games/games.controller';
@@ -23,16 +23,28 @@ import { GamelistsModule } from './gamelists/gamelists.module';
 import { GamesModule } from './games/games.module';
 import { GenresModule } from './genres/genres.module';
 import { UsersModule } from './users/users.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_PIPE } from '@nestjs/core';
+const cookieSession = require('cookie-session');
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'db.sqlite',
-      entities: [Developer, Gamelist, Game, Genre, User],
-      synchronize: true,
-      migrations: [],
-      migrationsRun: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV}`,
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          type: 'sqlite',
+          database: configService.get<string>('DB_NAME'),
+          entities: [Developer, Gamelist, Game, Genre, User],
+          synchronize: true,
+          migrations: [],
+          migrationsRun: configService.get<boolean>('MIGRATIONS_RUN'),
+        }
+      }
     }),
     DevelopersModule,
     GamelistsModule,
@@ -40,7 +52,29 @@ import { UsersModule } from './users/users.module';
     GenresModule,
     UsersModule,
   ],
-  controllers: [AppController, GamesController, DevelopersController, GenresController, UsersController, GamelistsController],
-  providers: [AppService, GamesService, DevelopersService, GenresService, UsersService, GamelistsService, AuthService],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        }
+      }),
+    }
+  ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(
+    private configService: ConfigService,
+  ) {}
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cookieSession({
+      keys: [this.configService.get('COOKIE_KEY')],
+    })).forRoutes('*');
+  }
+}
