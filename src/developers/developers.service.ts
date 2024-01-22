@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Like, Repository } from 'typeorm';
 import { Developer } from './entities/developer.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -9,28 +9,47 @@ export class DevelopersService {
     @InjectRepository(Developer) private developersRepository: Repository<Developer>
   ) {}
 
+  async find(query: Partial<Developer>) {
+    const title = query.title || '';
+    return await this.developersRepository.find({where: {title: Like(`%${title}%`)}});
+  }
+
   async create(title: string) {
     if (!title || title === '') {
-      return null;
+      throw new BadRequestException('title shouldn\'t be empty');
     }
 
-    if (await this.developersRepository.find({where: {title}})) {
-      return null;
+    const developers = await this.developersRepository.find({where: {title: Like(`%${title}%`)}});
+    if (developers.length > 0) {
+      throw new BadRequestException('developer already exists');
     }
 
     const developer = this.developersRepository.create({title});
     return await this.developersRepository.save(developer);
   }
 
-  async remove(id: number) {
-    if (!id) {
-      return null;
+  async update(id: number, newData: Partial<Developer>) {
+    if (!id || id < 1) {
+      throw new BadRequestException('id isn\'t a positive number');
     }
 
     const developer = await this.developersRepository.findOne({where: {id}});
-
     if (!developer) {
-      return null;
+      throw new NotFoundException('developer not found with given id');
+    }
+
+    Object.assign(developer, newData);
+    return await this.developersRepository.save(developer);
+  }
+
+  async remove(id: number) {
+    if (!id || id < 1) {
+      throw new BadRequestException('id isn\'t a positive number');
+    }
+
+    const developer = await this.developersRepository.findOne({where: {id}});
+    if (!developer) {
+      throw new NotFoundException('developer not found with given id');
     }
 
     return await this.developersRepository.remove(developer);
