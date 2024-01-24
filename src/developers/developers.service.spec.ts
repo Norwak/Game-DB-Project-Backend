@@ -41,37 +41,37 @@ describe('DevelopersService', () => {
 
 
   it('[find] should return an array of developers matching search query #1', async () => {
-    await developersService.create('Konami');
+    await developersService.create({ title: 'Konami' });
 
-    const developers = await developersService.find({title: 'Konami'});
+    const developers = await developersService.find('Konami');
     expect(developers.length).toEqual(1);
     expect(developers[0].title).toEqual('Konami');
   });
 
   it('[find] should return an array of developers matching search query #2', async () => {
-    await developersService.create('Konami');
-    await developersService.create('Capcom');
-    await developersService.create('Bethesda');
+    await developersService.create({ title: 'Konami' });
+    await developersService.create({ title: 'Capcom' });
+    await developersService.create({ title: 'Bethesda' });
 
-    const developers = await developersService.find({title: 'm'});
+    const developers = await developersService.find('m');
     expect(developers.length).toEqual(2);
     expect(developers[0].title).toEqual('Konami');
     expect(developers[1].title).toEqual('Capcom');
   });
 
   it('[find] should return an empty array', async () => {
-    await developersService.create('Konami');
-    await developersService.create('Capcom');
-    await developersService.create('Bethesda');
+    await developersService.create({ title: 'Konami' });
+    await developersService.create({ title: 'Capcom' });
+    await developersService.create({ title: 'Bethesda' });
 
-    const developers = await developersService.find({title: 'q'});
+    const developers = await developersService.find('q');
     expect(developers.length).toEqual(0);
   });
 
 
 
   it('[findOne] should return a developer with given id', async () => {
-    const developer = await developersService.create('Konami');
+    const developer = await developersService.create({ title: 'Konami' });
 
     const foundDeveloper = await developersService.findOne(developer.id);
     expect(developer.title).toEqual('Konami');
@@ -89,40 +89,40 @@ describe('DevelopersService', () => {
 
 
   it('[create] should create a developer with given title and return them', async () => {
-    const createdDeveloper = await developersService.create('Konami');
+    const createdDeveloper = await developersService.create({ title: 'Konami' });
     expect(createdDeveloper.title).toEqual('Konami');
   });
 
   it('[create] should throw a BadRequestException if developer\'s name is invalid', async () => {
-    await expect(developersService.create('')).rejects.toThrow(BadRequestException);
+    await expect(developersService.create({ title: '' })).rejects.toThrow(BadRequestException);
   });
 
   it('[create] should throw a BadRequestException if developer\'s name already exists', async () => {
-    await developersService.create('Konami');
-    await expect(developersService.create('Konami')).rejects.toThrow(BadRequestException);
+    await developersService.create({ title: 'Konami' });
+    await expect(developersService.create({ title: 'Konami' })).rejects.toThrow(BadRequestException);
   });
 
 
 
   it('[update] should update a developer\'s data with given ID and return updated developer', async () => {
-    const developer = await developersService.create('Konaim');
+    const developer = await developersService.create({ title: 'Konaim' });
     const updatedDeveloper = await developersService.update(developer.id, {title: 'Konami'});
     expect(updatedDeveloper.title).toEqual('Konami');
   });
 
   it('[update] should throw a BadRequestException if developer\'s id is invalid', async () => {
-    const developer = await developersService.create('Konaim');
-    await expect(developersService.update(-10, {})).rejects.toThrow(BadRequestException);
+    const developer = await developersService.create({ title: 'Konaim' });
+    await expect(developersService.update(-10, { title: '' })).rejects.toThrow(BadRequestException);
   });
 
   it('[update] should throw a NotFoundException if developer\'s id doesn\'t exist', async () => {
-    await expect(developersService.update(123, {})).rejects.toThrow(NotFoundException);
+    await expect(developersService.update(123, { title: '' })).rejects.toThrow(NotFoundException);
   });
 
   
 
   it('[remove] should delete a developer with given ID and return them', async () => {
-    const developer = await developersService.create('Konami');
+    const developer = await developersService.create({ title: 'Konami' });
     const deletedDeveloper = await developersService.remove(developer.id);
     expect(deletedDeveloper).toBeDefined();
   });

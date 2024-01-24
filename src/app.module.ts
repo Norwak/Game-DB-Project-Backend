@@ -1,18 +1,7 @@
 import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GamesController } from './games/games.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GamesService } from './games/games.service';
-import { DevelopersController } from './developers/developers.controller';
-import { GenresController } from './genres/genres.controller';
-import { DevelopersService } from './developers/developers.service';
-import { GenresService } from './genres/genres.service';
-import { UsersController } from './users/users.controller';
-import { UsersService } from './users/users.service';
-import { GamelistsController } from './gamelists/gamelists.controller';
-import { GamelistsService } from './gamelists/gamelists.service';
-import { AuthService } from './users/auth.service';
 import { User } from './users/entities/user.entity';
 import { Game } from './games/entities/game.entity';
 import { Developer } from './developers/entities/developer.entity';

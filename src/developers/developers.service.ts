@@ -2,6 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Like, Repository } from 'typeorm';
 import { Developer } from './entities/developer.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateDeveloperDto } from './dtos/create-developer.dto';
+import { UpdateDeveloperDto } from './dtos/update-developer.dto';
 
 @Injectable()
 export class DevelopersService {
@@ -9,8 +11,8 @@ export class DevelopersService {
     @InjectRepository(Developer) private developersRepository: Repository<Developer>
   ) {}
 
-  async find(query: Partial<Developer>) {
-    const title = query.title || '';
+  async find(query: string) {
+    const title = query || '';
     return await this.developersRepository.find({where: {title: Like(`%${title}%`)}});
   }
 
@@ -27,7 +29,7 @@ export class DevelopersService {
     return developer;
   }
 
-  async create(title: string) {
+  async create({ title }: CreateDeveloperDto) {
     if (!title || title === '') {
       throw new BadRequestException('title shouldn\'t be empty');
     }
@@ -41,7 +43,7 @@ export class DevelopersService {
     return await this.developersRepository.save(developer);
   }
 
-  async update(id: number, newData: Partial<Developer>) {
+  async update(id: number, newData: UpdateDeveloperDto) {
     if (!id || id < 1) {
       throw new BadRequestException('id isn\'t a positive number');
     }
