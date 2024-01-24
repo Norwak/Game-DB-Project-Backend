@@ -14,6 +14,19 @@ export class DevelopersService {
     return await this.developersRepository.find({where: {title: Like(`%${title}%`)}});
   }
 
+  async findOne(id: number) {
+    if (!id || id < 1) {
+      throw new BadRequestException('id isn\'t a positive number');
+    }
+
+    const developer = await this.developersRepository.findOne({where: {id}});
+    if (!developer) {
+      throw new NotFoundException('developer not found with given id');
+    }
+
+    return developer;
+  }
+
   async create(title: string) {
     if (!title || title === '') {
       throw new BadRequestException('title shouldn\'t be empty');

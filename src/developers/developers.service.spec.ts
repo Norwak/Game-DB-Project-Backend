@@ -2,65 +2,37 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DevelopersService } from './developers.service';
 import { Developer } from './entities/developer.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { FindManyOptions, FindOperator, Repository } from 'typeorm';
+import { DataSource, Repository, getRepository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { dataSourceOptions } from '../../test/extra/dataSourceOptions';
 
 describe('DevelopersService', () => {
   let developersService: DevelopersService;
-  let fakeDevelopersRepository: Repository<Developer>;
-  let fakeDb = [];
+  let testingModule: TestingModule;
+  let dataSource: DataSource;
 
   beforeEach(async () => {
-    fakeDb = []
+    dataSource = new DataSource(dataSourceOptions);
+    await dataSource.initialize();
 
-    const module: TestingModule = await Test.createTestingModule({
+    testingModule = await Test.createTestingModule({
       providers: [
         DevelopersService,
         {
           provide: getRepositoryToken(Developer),
-          // define all the methods that you use from the catRepo
-          // give proper return values as expected or mock implementations, your choice
-          useValue: {
-            find: (options: FindManyOptions<Developer>) => {
-              // @ts-ignore
-              const results = fakeDb.filter(developer => developer.title === options.where.title);
-              if (results) {
-                return Promise.resolve(results);
-              } else {
-                return Promise.resolve({});
-              }
-            },
-            findOne: (options: FindManyOptions<Developer>) => {
-              // @ts-ignore
-              const results = fakeDb.filter(developer => developer.id === options.where.id);
-              if (results) {
-                return Promise.resolve(results[0]);
-              } else {
-                return Promise.resolve({});
-              }
-            },
-            create: ({title}) => {
-              return {
-                id: Math.floor((Math.random() * 999999)),
-                title,
-              };
-            },
-            save: (developer: Developer) => {
-              fakeDb.push(developer);
-              return Promise.resolve(developer);
-            },
-            remove: (developer: Developer) => {
-              fakeDb = fakeDb.filter(item => item.id !== developer.id);
-              return Promise.resolve(developer);
-            }
-          },
+          useValue: dataSource.getRepository(Developer),
         },
       ],
     }).compile();
 
-    developersService = module.get<DevelopersService>(DevelopersService);
-    fakeDevelopersRepository = module.get<Repository<Developer>>(getRepositoryToken(Developer));
+    developersService = testingModule.get<DevelopersService>(DevelopersService);
   });
+
+  afterEach(async () => {
+    await dataSource.destroy();
+  });
+
+
 
   it('should be defined', () => {
     expect(developersService).toBeDefined();
@@ -94,6 +66,24 @@ describe('DevelopersService', () => {
 
     const developers = await developersService.find({title: 'q'});
     expect(developers.length).toEqual(0);
+  });
+
+
+
+  it('[findOne] should return a developer with given id', async () => {
+    const developer = await developersService.create('Konami');
+
+    const foundDeveloper = await developersService.findOne(developer.id);
+    expect(developer.title).toEqual('Konami');
+  });
+
+  it('[findOne] should throw a NotFoundException if developer\'s id doesn\'t exist', async () => {
+    await expect(developersService.findOne(12514)).rejects.toThrow(NotFoundException);
+  });
+
+  it('[findOne] should throw a BadRequestException if developer\'s id isn\'t valid', async () => {
+    await expect(developersService.findOne(-15)).rejects.toThrow(BadRequestException);
+    await expect(developersService.findOne(undefined)).rejects.toThrow(BadRequestException);
   });
 
 

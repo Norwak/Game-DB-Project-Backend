@@ -23,28 +23,19 @@ import { GamelistsModule } from './gamelists/gamelists.module';
 import { GamesModule } from './games/games.module';
 import { GenresModule } from './genres/genres.module';
 import { UsersModule } from './users/users.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
+import 'dotenv/config'
 const cookieSession = require('cookie-session');
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV}`,
-    }),
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        return {
-          type: 'sqlite',
-          database: configService.get<string>('DB_NAME'),
-          entities: [Developer, Gamelist, Game, Genre, User],
-          synchronize: true,
-          migrations: [],
-          migrationsRun: configService.get<boolean>('MIGRATIONS_RUN'),
-        }
-      }
+    TypeOrmModule.forRoot({
+      type: 'sqlite',
+      database: process.env.DEV_DB_NAME,
+      entities: [Developer, Gamelist, Game, Genre, User],
+      synchronize: true,
+      migrations: [],
+      migrationsRun: (process.env.DEV_MIGRATIONS_RUN === 'true'),
     }),
     DevelopersModule,
     GamelistsModule,
@@ -68,13 +59,11 @@ const cookieSession = require('cookie-session');
   ],
 })
 export class AppModule {
-  constructor(
-    private configService: ConfigService,
-  ) {}
+  constructor() {}
 
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(cookieSession({
-      keys: [this.configService.get('COOKIE_KEY')],
+      keys: [process.env.DEV_COOKIE_KEY],
     })).forRoutes('*');
   }
 }
