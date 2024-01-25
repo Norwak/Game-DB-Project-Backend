@@ -34,7 +34,7 @@ export class DevelopersService {
       throw new BadRequestException('title shouldn\'t be empty');
     }
 
-    const developers = await this.developersRepository.find({where: {title: Like(`%${title}%`)}});
+    const developers = await this.developersRepository.find({where: {title}});
     if (developers.length > 0) {
       throw new BadRequestException('developer already exists');
     }
