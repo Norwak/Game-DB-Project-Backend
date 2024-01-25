@@ -117,12 +117,13 @@ describe('DevelopersController', () => {
 
 
 
-  it('[remove] should delete a develper by id and return developer object back', async () => {
+  it('[remove] should delete a develper by id and return developer object back without id', async () => {
     fakeDevelopersService.remove = () => {
-      return Promise.resolve({id: 1, title: 'Konami'} as Developer);
+      return Promise.resolve({title: 'Konami'} as Developer);
     }
 
     const deletedDeveloper = await developersController.remove(1);
     expect(deletedDeveloper.title).toEqual('Konami');
+    expect(deletedDeveloper).not.toHaveProperty('id');
   });
 });
