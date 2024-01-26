@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DevelopersService } from './developers.service';
 import { Developer } from './entities/developer.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { DataSource, Repository, getRepository } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { dataSourceOptions } from '../../test/extra/dataSourceOptions';
 

@@ -1,0 +1,29 @@
+### Find users by search query
+GET http://localhost:3000/users?q=m
+
+
+### Find a user by id
+GET http://localhost:3000/users/1
+
+
+### Create a user
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "nickname": "Simon"
+}
+
+
+### Update a user
+PATCH http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+  "nickname": "Samus"
+}
+
+
+### Delete a user
+DELETE http://localhost:3000/users/1
+Content-Type: application/json

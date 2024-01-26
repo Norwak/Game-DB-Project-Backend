@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Gamelist } from "../../gamelists/entities/gamelist.entity";
 
 @Entity()
@@ -9,7 +9,7 @@ export class User {
   @Column()
   nickname: string;
 
-  @Column()
+  @CreateDateColumn()
   registrationDate: Date;
 
   @Column()
