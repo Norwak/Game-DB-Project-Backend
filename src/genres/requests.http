@@ -1,0 +1,29 @@
+### Find genres by search query
+GET http://localhost:3000/genres?q=a
+
+
+### Find a genre by id
+GET http://localhost:3000/genres/1
+
+
+### Create a genre
+POST http://localhost:3000/genres
+Content-Type: application/json
+
+{
+  "title": "Adventure"
+}
+
+
+### Update a genre
+PATCH http://localhost:3000/genres/1
+Content-Type: application/json
+
+{
+  "title": "Action"
+}
+
+
+### Delete a genre
+DELETE http://localhost:3000/genres/1
+Content-Type: application/json
