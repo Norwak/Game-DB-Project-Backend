@@ -18,6 +18,7 @@
     "test:genres": "cross-env NODE_ENV=test jest 'genres.*'",
     "test:users": "cross-env NODE_ENV=test jest --testRegex='users.*.spec.ts'",
     "test:gamelists": "cross-env NODE_ENV=test jest --testRegex='gamelists.*.spec.ts'",
+    "test:games": "cross-env NODE_ENV=test jest --testRegex='games.*.spec.ts'",
     "test:watch": "cross-env NODE_ENV=test jest --watchAll",
     "test:cov": "cross-env NODE_ENV=test jest --coverage",
     "test:debug": "cross-env NODE_ENV=test node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
