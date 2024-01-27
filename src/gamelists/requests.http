@@ -1,0 +1,29 @@
+### Find gamelists by search query
+GET http://localhost:3000/gamelists?q=l
+
+
+### Find a gamelist by id
+GET http://localhost:3000/gamelists/1
+
+
+### Create a gamelist
+POST http://localhost:3000/gamelists
+Content-Type: application/json
+
+{
+  "title": "List #123"
+}
+
+
+### Update a gamelist
+PATCH http://localhost:3000/gamelists/1
+Content-Type: application/json
+
+{
+  "title": "My list"
+}
+
+
+### Delete a gamelist
+DELETE http://localhost:3000/gamelists/1
+Content-Type: application/json
