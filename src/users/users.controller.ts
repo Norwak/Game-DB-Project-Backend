@@ -4,12 +4,14 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { Serialize } from '../interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
+import { AuthService } from './auth.service';
 
 @Controller('users')
 @Serialize(UserDto)
 export class UsersController {
   constructor(
-    private usersService: UsersService
+    private usersService: UsersService,
+    private authService: AuthService
   ) {}
 
   @Get()
@@ -22,9 +24,9 @@ export class UsersController {
     return await this.usersService.findOne(id);
   }
 
-  @Post()
+  @Post('signup')
   async create(@Body() createUserDto: CreateUserDto) {
-    return await this.usersService.create(createUserDto);
+    return await this.authService.signup(createUserDto);
   }
 
   @Patch(':id')
