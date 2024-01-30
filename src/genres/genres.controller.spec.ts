@@ -11,36 +11,11 @@ describe('GenresController', () => {
 
   beforeEach(async () => {
     fakeGenresService = {
-      find: (query: string) => {
-        return Promise.resolve([{
-          id: 1,
-          title: 'some title'
-        } as Genre]);
-      },
-      findOne: (id: number) => {
-        return Promise.resolve({
-          id,
-          title: 'some title'
-        } as Genre);
-      },
-      create: (item: CreateGenreDto) => {
-        return Promise.resolve({
-          id: 1,
-          title: item.title
-        } as Genre);
-      },
-      update: (id: number, newData: Partial<Genre>) => {
-        return Promise.resolve({
-          id,
-          title: newData.title
-        } as Genre);
-      },
-      remove: (id: number) => {
-        return Promise.resolve({
-          id,
-          title: 'some title'
-        } as Genre);
-      }
+      find: jest.fn(),
+      findOne: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      remove: jest.fn()
     }
 
     const module: TestingModule = await Test.createTestingModule({

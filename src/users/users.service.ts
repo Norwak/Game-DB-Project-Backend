@@ -29,7 +29,7 @@ export class UsersService {
     return user;
   }
 
-  async create({ nickname }: CreateUserDto) {
+  async create({ nickname, password }: CreateUserDto) {
     if (!nickname || nickname === '') {
       throw new BadRequestException('nickname shouldn\'t be empty');
     }
@@ -41,6 +41,7 @@ export class UsersService {
 
     const user = this.usersRepository.create({
       nickname,
+      password,
       lastLogin: new Date("1970-01-01T00:00:00.000Z")
     });
     return await this.usersRepository.save(user);

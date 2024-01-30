@@ -11,36 +11,11 @@ describe('DevelopersController', () => {
 
   beforeEach(async () => {
     fakeDevelopersService = {
-      find: (query: string) => {
-        return Promise.resolve([{
-          id: 1,
-          title: 'some title'
-        } as Developer]);
-      },
-      findOne: (id: number) => {
-        return Promise.resolve({
-          id,
-          title: 'some title'
-        } as Developer);
-      },
-      create: (item: CreateDeveloperDto) => {
-        return Promise.resolve({
-          id: 1,
-          title: item.title
-        } as Developer);
-      },
-      update: (id: number, newData: Partial<Developer>) => {
-        return Promise.resolve({
-          id,
-          title: newData.title
-        } as Developer);
-      },
-      remove: (id: number) => {
-        return Promise.resolve({
-          id,
-          title: 'some title'
-        } as Developer);
-      }
+      find: jest.fn(),
+      findOne: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      remove: jest.fn()
     }
 
     const module: TestingModule = await Test.createTestingModule({

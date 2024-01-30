@@ -41,18 +41,19 @@ describe('UsersService', () => {
 
 
   it('[find] should return an array of users matching search query #1', async () => {
-    await usersService.create({ nickname: 'Joel' });
+    await usersService.create({ nickname: 'Joel', password: '12345678' });
 
     const users = await usersService.find('Joel');
     expect(users.length).toEqual(1);
     expect(users[0].nickname).toEqual('Joel');
     expect(users[0].lastLogin.getFullYear()).toEqual(1970);
+    expect(users[0]).toHaveProperty('password');
   });
 
   it('[find] should return an array of users matching search query #2', async () => {
-    await usersService.create({ nickname: 'Joel' });
-    await usersService.create({ nickname: 'Simon' });
-    await usersService.create({ nickname: 'Samus' });
+    await usersService.create({ nickname: 'Joel', password: '12345678' });
+    await usersService.create({ nickname: 'Simon', password: '12345678' });
+    await usersService.create({ nickname: 'Samus', password: '12345678' });
 
     const users = await usersService.find('m');
     expect(users.length).toEqual(2);
@@ -61,9 +62,9 @@ describe('UsersService', () => {
   });
 
   it('[find] should return an empty array', async () => {
-    await usersService.create({ nickname: 'Joel' });
-    await usersService.create({ nickname: 'Simon' });
-    await usersService.create({ nickname: 'Samus' });
+    await usersService.create({ nickname: 'Joel', password: '12345678' });
+    await usersService.create({ nickname: 'Simon', password: '12345678' });
+    await usersService.create({ nickname: 'Samus', password: '12345678' });
 
     const users = await usersService.find('q');
     expect(users.length).toEqual(0);
@@ -72,10 +73,11 @@ describe('UsersService', () => {
 
 
   it('[findOne] should return a user with given id', async () => {
-    const user = await usersService.create({ nickname: 'Joel' });
+    const user = await usersService.create({ nickname: 'Joel', password: '12345678' });
 
     const foundUser = await usersService.findOne(user.id);
     expect(foundUser.nickname).toEqual('Joel');
+    expect(foundUser).toHaveProperty('password');
   });
 
   it('[findOne] should throw a NotFoundException if user\'s id doesn\'t exist', async () => {
@@ -90,31 +92,33 @@ describe('UsersService', () => {
 
 
   it('[create] should create a user with given nickname and return them with registration date and last login in 1970', async () => {
-    const createdUser = await usersService.create({ nickname: 'Joel' });
+    const createdUser = await usersService.create({ nickname: 'Joel', password: '12345678' });
     expect(createdUser.nickname).toEqual('Joel');
-    expect(createdUser.registrationDate).toBeDefined();
-    expect(createdUser.lastLogin).toBeDefined();
+    expect(createdUser).toHaveProperty('registrationDate');
+    expect(createdUser).toHaveProperty('lastLogin');
+    expect(createdUser).toHaveProperty('password');
   });
 
   it('[create] should throw a BadRequestException if user\'s name is invalid', async () => {
-    await expect(usersService.create({ nickname: '' })).rejects.toThrow(BadRequestException);
+    await expect(usersService.create({ nickname: '', password: '12345678' })).rejects.toThrow(BadRequestException);
   });
 
   it('[create] should throw a BadRequestException if user\'s name already exists', async () => {
-    await usersService.create({ nickname: 'Joel' });
-    await expect(usersService.create({ nickname: 'Joel' })).rejects.toThrow(BadRequestException);
+    await usersService.create({ nickname: 'Joel', password: '12345678' });
+    await expect(usersService.create({ nickname: 'Joel', password: '12345678' })).rejects.toThrow(BadRequestException);
   });
 
 
 
   it('[update] should update a user\'s data with given ID and return updated user', async () => {
-    const user = await usersService.create({ nickname: 'Jole' });
+    const user = await usersService.create({ nickname: 'Jole', password: '12345678' });
     const updatedUser = await usersService.update(user.id, {nickname: 'Joel'});
     expect(updatedUser.nickname).toEqual('Joel');
+    expect(updatedUser).toHaveProperty('password');
   });
 
   it('[update] should throw a BadRequestException if user\'s id is invalid', async () => {
-    const user = await usersService.create({ nickname: 'Jole' });
+    const user = await usersService.create({ nickname: 'Jole', password: '12345678' });
     await expect(usersService.update(-10, { nickname: '' })).rejects.toThrow(BadRequestException);
   });
 
@@ -125,9 +129,10 @@ describe('UsersService', () => {
   
 
   it('[remove] should delete a user with given ID and return them', async () => {
-    const user = await usersService.create({ nickname: 'Joel' });
+    const user = await usersService.create({ nickname: 'Joel', password: '12345678' });
     const deletedUser = await usersService.remove(user.id);
     expect(deletedUser).toBeDefined();
+    expect(deletedUser).toHaveProperty('password');
   });
 
   it('[remove] should throw a BadRequestException if user\'s id is invalid', async () => {

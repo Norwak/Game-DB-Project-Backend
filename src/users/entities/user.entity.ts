@@ -9,6 +9,9 @@ export class User {
   @Column()
   nickname: string;
 
+  @Column()
+  password: string;
+
   @CreateDateColumn()
   registrationDate: Date;
 
