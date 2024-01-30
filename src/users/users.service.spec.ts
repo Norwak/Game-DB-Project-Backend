@@ -75,7 +75,7 @@ describe('UsersService', () => {
     const user = await usersService.create({ nickname: 'Joel' });
 
     const foundUser = await usersService.findOne(user.id);
-    expect(user.nickname).toEqual('Joel');
+    expect(foundUser.nickname).toEqual('Joel');
   });
 
   it('[findOne] should throw a NotFoundException if user\'s id doesn\'t exist', async () => {

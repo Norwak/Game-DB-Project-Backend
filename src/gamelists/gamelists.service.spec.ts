@@ -74,7 +74,7 @@ describe('GamelistsService', () => {
     const gamelist = await gamelistsService.create({ title: 'My list' });
 
     const foundGamelist = await gamelistsService.findOne(gamelist.id);
-    expect(gamelist.title).toEqual('My list');
+    expect(foundGamelist.title).toEqual('My list');
   });
 
   it('[findOne] should throw a NotFoundException if gamelist\'s id doesn\'t exist', async () => {

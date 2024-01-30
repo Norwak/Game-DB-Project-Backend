@@ -38,6 +38,10 @@ export class GamesService {
       throw new BadRequestException('release date shouldn\'t be empty');
     }
 
+    if (releaseDate.getFullYear() < 1950) {
+      throw new BadRequestException('release date is too old');
+    }
+
     const games = await this.gamesRepository.find({where: {title}});
     if (games.length > 0) {
       throw new BadRequestException('game already exists');

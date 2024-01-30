@@ -73,8 +73,8 @@ describe('GenresService', () => {
   it('[findOne] should return a genre with given id', async () => {
     const genre = await genresService.create({ title: 'Action' });
 
-    const foundDeveloper = await genresService.findOne(genre.id);
-    expect(genre.title).toEqual('Action');
+    const foundGenre = await genresService.findOne(genre.id);
+    expect(foundGenre.title).toEqual('Action');
   });
 
   it('[findOne] should throw a NotFoundException if genre\'s id doesn\'t exist', async () => {
@@ -106,8 +106,8 @@ describe('GenresService', () => {
 
   it('[update] should update a genre\'s data with given ID and return updated genre', async () => {
     const genre = await genresService.create({ title: 'CAtion' });
-    const updatedDeveloper = await genresService.update(genre.id, {title: 'Action'});
-    expect(updatedDeveloper.title).toEqual('Action');
+    const updatedGenre = await genresService.update(genre.id, {title: 'Action'});
+    expect(updatedGenre.title).toEqual('Action');
   });
 
   it('[update] should throw a BadRequestException if genre\'s id is invalid', async () => {

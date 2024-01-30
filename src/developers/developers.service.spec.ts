@@ -74,7 +74,7 @@ describe('DevelopersService', () => {
     const developer = await developersService.create({ title: 'Konami' });
 
     const foundDeveloper = await developersService.findOne(developer.id);
-    expect(developer.title).toEqual('Konami');
+    expect(foundDeveloper.title).toEqual('Konami');
   });
 
   it('[findOne] should throw a NotFoundException if developer\'s id doesn\'t exist', async () => {
