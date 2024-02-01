@@ -10,7 +10,7 @@ export class AuthService {
   ) {}
 
   async signup({nickname, password}) {
-    if (!password) {
+    if (!password || password.length < 7) {
       throw new BadRequestException('password shouldn\'t be empty');
     }
 
@@ -20,7 +20,7 @@ export class AuthService {
   }
 
   async signin({nickname, password}, @Session() session: Record<string, any>) {
-    if (!password) {
+    if (!password || password.length < 7) {
       throw new BadRequestException('password shouldn\'t be empty');
     }
 

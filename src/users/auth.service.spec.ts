@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from './users.service';
 import { PasswordService } from './password.service';
 import { User } from './entities/user.entity';
+import { BadRequestException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -72,6 +73,28 @@ describe('AuthService', () => {
     const [salt, hash] = newUser.password.split('.');
     expect(salt).toBeDefined();
     expect(hash).toBeDefined();
+  });
+
+  it('should throw a BadRequestException if password is less than 7 characters', async () => {
+    fakePasswordService.encrypt = () => {
+      return Promise.resolve('somesalt.somehash');
+    }
+
+    fakeUsersService.create = () => {
+      return Promise.resolve({
+        id: 1,
+        nickname: 'Joel',
+        password: 'somesalt.somehash',
+        registrationDate: new Date('2000-02-02T02:02:02.000Z'),
+        lastLogin: new Date('2000-02-02T02:02:02.000Z'),
+      } as User);
+    }
+
+    const session: Record<string, any> = {};
+    await expect(authService.signup({nickname: 'Joel', password: ''})).rejects.toThrow(BadRequestException);
+    await expect(authService.signup({nickname: 'Joel', password: '123456'})).rejects.toThrow(BadRequestException);
+    await expect(authService.signin({nickname: 'Joel', password: '123456'}, session)).rejects.toThrow(BadRequestException);
+    await expect(authService.signin({nickname: 'Joel', password: '123456'}, session)).rejects.toThrow(BadRequestException);
   });
 
 
