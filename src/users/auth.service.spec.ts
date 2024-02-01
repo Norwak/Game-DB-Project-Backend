@@ -99,7 +99,7 @@ describe('AuthService', () => {
 
 
 
-  it('should signin a user and update session', async () => {
+  it('should signin a user, update session and update lastLogin', async () => {
     fakePasswordService.verify = () => {
       return Promise.resolve(true);
     }
@@ -114,6 +114,16 @@ describe('AuthService', () => {
       } as User]);
     }
 
+    fakeUsersService.update = () => {
+      return Promise.resolve({
+        id: 1,
+        nickname: 'Joel',
+        password: 'somesalt.somehash',
+        registrationDate: new Date('2000-02-02T02:02:02.000Z'),
+        lastLogin: new Date(),
+      } as User);
+    }
+
     const session: Record<string, any> = {};
     const user = await authService.signin(
       {nickname: 'Joel', password: '12345678'},
@@ -122,6 +132,7 @@ describe('AuthService', () => {
 
     expect(user).toBeDefined();
     expect(user.id).toEqual(1);
+    expect(user.lastLogin.getFullYear()).toEqual(new Date().getFullYear());
     expect(session.userId).toEqual(1);
   });
 });

@@ -24,10 +24,11 @@ export class AuthService {
       throw new BadRequestException('password shouldn\'t be empty');
     }
 
-    const [user] = await this.usersService.find(nickname);
-    const result = await this.passwordService.verify(password, user.password);
+    let [user] = await this.usersService.find(nickname);
+    const passwordsMatch = await this.passwordService.verify(password, user.password);
 
-    if (result) {
+    if (passwordsMatch) {
+      user = await this.usersService.update(user.id, {lastLogin: new Date()});
       session.userId = user.id;
       return user;
     } else {
