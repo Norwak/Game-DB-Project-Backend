@@ -1,12 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Session, UseGuards } from '@nestjs/common';
 import { GamelistsService } from './gamelists.service';
 import { CreateGamelistDto } from './dtos/create-gamelist.dto';
 import { UpdateGamelistDto } from './dtos/Update-gamelist.dto';
+import { AuthGuard } from '../guards/auth.guard';
+import { UsersService } from '../users/users.service';
 
 @Controller('gamelists')
 export class GamelistsController {
   constructor(
-    private gamelistsService: GamelistsService
+    private gamelistsService: GamelistsService,
+    private usersService: UsersService
   ) {}
 
   @Get()
@@ -20,8 +23,10 @@ export class GamelistsController {
   }
 
   @Post()
-  async create(@Body() createGamelistDto: CreateGamelistDto) {
-    return await this.gamelistsService.create(createGamelistDto);
+  @UseGuards(AuthGuard)
+  async create(@Body() createGamelistDto: CreateGamelistDto, @Session() session: Record<string, any>) {
+    const user = await this.usersService.findOne(session.userId);
+    return await this.gamelistsService.create(createGamelistDto, user);
   }
 
   @Patch(':id')

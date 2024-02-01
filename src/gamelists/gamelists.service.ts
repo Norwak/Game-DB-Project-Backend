@@ -4,6 +4,7 @@ import { Gamelist } from './entities/gamelist.entity';
 import { Like, Repository } from 'typeorm';
 import { CreateGamelistDto } from './dtos/create-gamelist.dto';
 import { UpdateGamelistDto } from './dtos/Update-gamelist.dto';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class GamelistsService {
@@ -29,7 +30,7 @@ export class GamelistsService {
     return gamelist;
   }
 
-  async create({ title }: CreateGamelistDto) {
+  async create({ title }: CreateGamelistDto, user: User) {
     if (!title || title === '') {
       throw new BadRequestException('title shouldn\'t be empty');
     }
@@ -40,6 +41,7 @@ export class GamelistsService {
     }
 
     const gamelist = this.gamelistsRepository.create({title});
+    gamelist.user = user;
     return await this.gamelistsRepository.save(gamelist);
   }
 

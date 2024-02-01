@@ -2,12 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GamelistsController } from './gamelists.controller';
 import { GamelistsService } from './gamelists.service';
 import { Gamelist } from './entities/gamelist.entity';
-import { CreateGamelistDto } from './dtos/create-gamelist.dto';
 import { BadRequestException } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 
 describe('GamelistsController', () => {
   let gamelistsController: GamelistsController;
   let fakeGamelistsService: Partial<GamelistsService>;
+  let fakeUsersService: Partial<UsersService>;
 
   beforeEach(async () => {
     fakeGamelistsService = {
@@ -18,13 +20,21 @@ describe('GamelistsController', () => {
       remove: jest.fn()
     }
 
+    fakeUsersService = {
+      findOne: jest.fn(),
+    }
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [GamelistsController],
       providers: [
         {
           provide: GamelistsService,
           useValue: fakeGamelistsService,
-        }
+        },
+        {
+          provide: UsersService,
+          useValue: fakeUsersService,
+        },
       ]
     }).compile();
 
@@ -62,12 +72,23 @@ describe('GamelistsController', () => {
 
 
   it('[create] should return a gamelist back with assigned id', async () => {
-    fakeGamelistsService.create = () => {
-      return Promise.resolve({id: 1, title: 'My list'} as Gamelist);
+    const user = {
+      id: 1,
+      nickname: 'Joel',
+    } as User;
+
+    fakeUsersService.findOne = () => {
+      return Promise.resolve(user);
     }
 
-    const gamelist = await gamelistsController.create({title: 'My list'});
+    fakeGamelistsService.create = () => {
+      return Promise.resolve({id: 1, title: 'My list', user} as Gamelist);
+    }
+
+    const session = {userId: 1};
+    const gamelist = await gamelistsController.create({title: 'My list'}, session);
     expect(gamelist).toHaveProperty('id');
+    expect(gamelist.user.id).toEqual(1);
   });
 
   it('[create] should throw BadRequestException if title isn\'t valid', async () => {
@@ -75,7 +96,8 @@ describe('GamelistsController', () => {
       throw new BadRequestException('title shouldn\'t be empty');
     }
 
-    await expect(gamelistsController.create({title: undefined})).rejects.toThrow(BadRequestException);
+    const session = {userId: 1};
+    await expect(gamelistsController.create({title: undefined}, session)).rejects.toThrow(BadRequestException);
   });
 
 

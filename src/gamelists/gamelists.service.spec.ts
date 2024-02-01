@@ -5,11 +5,16 @@ import { dataSourceOptions } from '../../test/extra/dataSourceOptions';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Gamelist } from './entities/gamelist.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { User } from '../users/entities/user.entity';
 
 describe('GamelistsService', () => {
   let gamelistsService: GamelistsService;
   let testingModule: TestingModule;
   let dataSource: DataSource;
+  let testUser = {
+    id: 1,
+    nickname: 'Joel',
+  } as User;
 
   beforeEach(async () => {
     dataSource = new DataSource(dataSourceOptions);
@@ -41,7 +46,7 @@ describe('GamelistsService', () => {
 
 
   it('[find] should return an array of gamelists matching search query #1', async () => {
-    await gamelistsService.create({ title: 'My list' });
+    await gamelistsService.create({ title: 'My list' }, testUser);
 
     const gamelists = await gamelistsService.find('My list');
     expect(gamelists.length).toEqual(1);
@@ -49,9 +54,9 @@ describe('GamelistsService', () => {
   });
 
   it('[find] should return an array of gamelists matching search query #2', async () => {
-    await gamelistsService.create({ title: 'My list' });
-    await gamelistsService.create({ title: 'Best games' });
-    await gamelistsService.create({ title: 'Backlog' });
+    await gamelistsService.create({ title: 'My list' }, testUser);
+    await gamelistsService.create({ title: 'Best games' }, testUser);
+    await gamelistsService.create({ title: 'Backlog' }, testUser);
 
     const gamelists = await gamelistsService.find('m');
     expect(gamelists.length).toEqual(2);
@@ -60,9 +65,9 @@ describe('GamelistsService', () => {
   });
 
   it('[find] should return an empty array', async () => {
-    await gamelistsService.create({ title: 'My list' });
-    await gamelistsService.create({ title: 'Best games' });
-    await gamelistsService.create({ title: 'Backlog' });
+    await gamelistsService.create({ title: 'My list' }, testUser);
+    await gamelistsService.create({ title: 'Best games' }, testUser);
+    await gamelistsService.create({ title: 'Backlog' }, testUser);
 
     const gamelists = await gamelistsService.find('q');
     expect(gamelists.length).toEqual(0);
@@ -71,7 +76,7 @@ describe('GamelistsService', () => {
 
 
   it('[findOne] should return a gamelist with given id', async () => {
-    const gamelist = await gamelistsService.create({ title: 'My list' });
+    const gamelist = await gamelistsService.create({ title: 'My list' }, testUser);
 
     const foundGamelist = await gamelistsService.findOne(gamelist.id);
     expect(foundGamelist.title).toEqual('My list');
@@ -89,31 +94,32 @@ describe('GamelistsService', () => {
 
 
   it('[create] should create a gamelist with given title and return them', async () => {
-    const createdGamelist = await gamelistsService.create({ title: 'My list' });
+    const createdGamelist = await gamelistsService.create({ title: 'My list' }, testUser);
     expect(createdGamelist.title).toEqual('My list');
     expect(createdGamelist.creationDate.getFullYear()).toEqual(new Date().getFullYear());
     expect(createdGamelist.lastUpdated.getFullYear()).toEqual(new Date().getFullYear());
+    expect(createdGamelist.user.id).toEqual(1);
   });
 
   it('[create] should throw a BadRequestException if gamelist\'s name is invalid', async () => {
-    await expect(gamelistsService.create({ title: '' })).rejects.toThrow(BadRequestException);
+    await expect(gamelistsService.create({ title: '' }, testUser)).rejects.toThrow(BadRequestException);
   });
 
   it('[create] should throw a BadRequestException if gamelist\'s name already exists', async () => {
-    await gamelistsService.create({ title: 'My list' });
-    await expect(gamelistsService.create({ title: 'My list' })).rejects.toThrow(BadRequestException);
+    await gamelistsService.create({ title: 'My list' }, testUser);
+    await expect(gamelistsService.create({ title: 'My list' }, testUser)).rejects.toThrow(BadRequestException);
   });
 
 
 
   it('[update] should update a gamelist\'s data with given ID and return updated gamelist', async () => {
-    const gamelist = await gamelistsService.create({ title: 'My ilst' });
+    const gamelist = await gamelistsService.create({ title: 'My ilst' }, testUser);
     const updatedGamelist = await gamelistsService.update(gamelist.id, {title: 'My list'});
     expect(updatedGamelist.title).toEqual('My list');
   });
 
   it('[update] should throw a BadRequestException if gamelist\'s id is invalid', async () => {
-    const gamelist = await gamelistsService.create({ title: 'My ilst' });
+    const gamelist = await gamelistsService.create({ title: 'My ilst' }, testUser);
     await expect(gamelistsService.update(-10, { title: '' })).rejects.toThrow(BadRequestException);
   });
 
@@ -124,7 +130,7 @@ describe('GamelistsService', () => {
   
 
   it('[remove] should delete a gamelist with given ID and return them', async () => {
-    const gamelist = await gamelistsService.create({ title: 'My list' });
+    const gamelist = await gamelistsService.create({ title: 'My list' }, testUser);
     const deletedGamelist = await gamelistsService.remove(gamelist.id);
     expect(deletedGamelist).toBeDefined();
   });

@@ -11,7 +11,7 @@ POST http://localhost:3000/gamelists
 Content-Type: application/json
 
 {
-  "title": "List #123"
+  "title": "List #124"
 }
 
 
