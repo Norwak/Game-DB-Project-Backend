@@ -17,7 +17,7 @@ Content-Type: application/json
 
 
 ### Update a game
-PATCH http://localhost:3000/games/2
+PATCH http://localhost:3000/games/1
 Content-Type: application/json
 
 {

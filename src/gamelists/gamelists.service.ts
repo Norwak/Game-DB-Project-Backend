@@ -5,11 +5,12 @@ import { Like, Repository } from 'typeorm';
 import { CreateGamelistDto } from './dtos/create-gamelist.dto';
 import { UpdateGamelistDto } from './dtos/Update-gamelist.dto';
 import { User } from '../users/entities/user.entity';
+import { Game } from '../games/entities/game.entity';
 
 @Injectable()
 export class GamelistsService {
   constructor(
-    @InjectRepository(Gamelist) private gamelistsRepository: Repository<Gamelist>
+    @InjectRepository(Gamelist) private gamelistsRepository: Repository<Gamelist>,
   ) {}
 
   async find(query: string) {
@@ -70,5 +71,22 @@ export class GamelistsService {
     }
 
     return await this.gamelistsRepository.remove(gamelist);
+  }
+
+
+
+  async addGames(gamelistId: number, games: Game[]) {
+    if (!gamelistId || gamelistId < 1) {
+      throw new BadRequestException('id isn\'t a positive number');
+    }
+
+    const gamelist = await this.gamelistsRepository.findOne({where: {id: gamelistId}});
+    if (!gamelist) {
+      throw new NotFoundException('gamelist not found with given id');
+    }
+
+    gamelist.games = games;
+
+    return await this.gamelistsRepository.save(gamelist);
   }
 }

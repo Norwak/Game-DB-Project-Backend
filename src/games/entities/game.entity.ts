@@ -15,7 +15,6 @@ export class Game {
   releaseDate: Date;
 
   @ManyToMany(type => Gamelist, gamelist => gamelist.games)
-  @JoinTable()
   gamelists: Gamelist[];
 
   @ManyToMany(type => Developer, developer => developer.games)

@@ -27,3 +27,13 @@ Content-Type: application/json
 ### Delete a gamelist
 DELETE http://localhost:3000/gamelists/1
 Content-Type: application/json
+
+
+### Add games to a gamelist
+POST http://localhost:3000/gamelists/addGames
+Content-Type: application/json
+
+{
+  "gamelistId": 2,
+  "gameIds": [1, 2]
+}

@@ -1,4 +1,5 @@
-import { Expose, Transform } from "class-transformer";
+import { Expose } from "class-transformer";
+import { Game } from "../../games/entities/game.entity";
 
 export class GamelistDto {
   @Expose()
@@ -15,4 +16,7 @@ export class GamelistDto {
 
   @Expose()
   userId: number;
+
+  @Expose()
+  gamesIds: number[];
 }
