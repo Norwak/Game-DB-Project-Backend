@@ -4,8 +4,11 @@ import { CreateGamelistDto } from './dtos/create-gamelist.dto';
 import { UpdateGamelistDto } from './dtos/Update-gamelist.dto';
 import { AuthGuard } from '../guards/auth.guard';
 import { UsersService } from '../users/users.service';
+import { Serialize } from '../interceptors/serialize.interceptor';
+import { GamelistDto } from './dtos/gamelist.dto';
 
 @Controller('gamelists')
+@Serialize(GamelistDto)
 export class GamelistsController {
   constructor(
     private gamelistsService: GamelistsService,

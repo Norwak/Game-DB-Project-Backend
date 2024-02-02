@@ -14,11 +14,18 @@ describe('GamelistsService', () => {
   let testUser = {
     id: 1,
     nickname: 'Joel',
+    password: '12345678',
+    registrationDate: new Date('2020-02-02T02:02:02.000Z'),
+    lastLogin: new Date('2020-02-02T02:02:02.000Z'),
   } as User;
 
   beforeEach(async () => {
     dataSource = new DataSource(dataSourceOptions);
     await dataSource.initialize();
+
+    await dataSource.createQueryBuilder().insert().into(User).values([
+      testUser,
+    ]).execute();
 
     testingModule = await Test.createTestingModule({
       providers: [
@@ -26,6 +33,10 @@ describe('GamelistsService', () => {
         {
           provide: getRepositoryToken(Gamelist),
           useValue: dataSource.getRepository(Gamelist),
+        },
+        {
+          provide: getRepositoryToken(User),
+          useValue: dataSource.getRepository(User),
         },
       ],
     }).compile();

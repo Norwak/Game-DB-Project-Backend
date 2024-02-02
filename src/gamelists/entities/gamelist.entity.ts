@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "../../users/entities/user.entity";
 import { Game } from "../../games/entities/game.entity";
 
@@ -16,7 +16,11 @@ export class Gamelist {
   @UpdateDateColumn()
   lastUpdated: Date;
 
+  @Column({ nullable: true })
+  userId: number;
+
   @ManyToOne(type => User, user => user.gamelists)
+  @JoinColumn()
   user: User;
 
   @ManyToMany(type => Game, game => game.gamelists)
