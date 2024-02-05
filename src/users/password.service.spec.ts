@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PasswordService } from './password.service';
+import { BadRequestException } from '@nestjs/common';
 
 describe('PasswordService', () => {
   let passwordService: PasswordService;
@@ -20,7 +21,7 @@ describe('PasswordService', () => {
 
 
 
-  it('should encrypt password with salt', async () => {
+  it('[encrypt] should encrypt password with salt', async () => {
     const encryptedPassword = await passwordService.encrypt('12345678');
 
     expect(encryptedPassword).not.toEqual('12345678');
@@ -29,9 +30,14 @@ describe('PasswordService', () => {
     expect(hash).toBeDefined();
   });
 
+  it('[encrypt] should throw a BadRequestException if password is less than 7 characters', async () => {
+    await expect(passwordService.encrypt('')).rejects.toThrow(BadRequestException);
+    await expect(passwordService.encrypt('123456')).rejects.toThrow(BadRequestException);
+  });
 
 
-  it('should verify passwords', async () => {
+
+  it('[verify] should verify passwords', async () => {
     const plainPassword = '12345678';
     const encryptedPassword = await passwordService.encrypt(plainPassword);
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 
@@ -9,6 +9,10 @@ export class PasswordService {
   constructor() {}
 
   async encrypt(plainPassword: string) {
+    if (!plainPassword || plainPassword.length < 7) {
+      throw new BadRequestException('password should be more than 6 characters');
+    }
+
     // generate password hash
     const salt = randomBytes(8).toString('hex');
     const hash = (await scrypt(plainPassword, salt, 32)) as Buffer;

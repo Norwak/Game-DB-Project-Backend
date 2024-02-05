@@ -5,10 +5,11 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { PasswordService } from './password.service';
 import { AuthService } from './auth.service';
+import { PrivilegesService } from './privileges.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  providers: [UsersService, AuthService, PasswordService],
+  providers: [UsersService, AuthService, PasswordService, PrivilegesService],
   controllers: [UsersController],
   exports: [UsersService]
 })

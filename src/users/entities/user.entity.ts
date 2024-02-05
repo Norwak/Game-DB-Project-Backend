@@ -18,6 +18,9 @@ export class User {
   @Column()
   lastLogin: Date;
 
+  @Column({default: false})
+  isAdmin: boolean;
+
   @OneToMany(type => Gamelist, gamelist => gamelist.user)
   gamelists: Gamelist[];
 }

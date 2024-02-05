@@ -72,6 +72,23 @@ describe('UsersService', () => {
 
 
 
+  it('[findSome] should return an array of users by ids', async () => {
+    await usersService.create({ nickname: 'Joel', password: '12345678' });
+    await usersService.create({ nickname: 'Simon', password: '12345678' });
+    await usersService.create({ nickname: 'Samus', password: '12345678' });
+
+    const users = await usersService.findSome([1, 2, 3]);
+    expect(users.length).toEqual(3);
+    expect(users[2].nickname).toEqual('Samus');
+  });
+
+  it('[findSome] should return an empty array of users weren\'t found', async () => {
+    const users = await usersService.findSome([1, 2, 3]);
+    expect(users.length).toEqual(0);
+  });
+
+
+
   it('[findOne] should return a user with given id', async () => {
     const user = await usersService.create({ nickname: 'Joel', password: '12345678' });
 
@@ -134,7 +151,7 @@ describe('UsersService', () => {
 
     const deletedUser = await usersService.remove(user.id, session);
     expect(deletedUser.nickname).toEqual('Joel');
-    expect(deletedUser).not.toHaveProperty('id');
+    expect(deletedUser.id).toEqual(undefined);
     expect(session).not.toHaveProperty('userId');
   });
 
@@ -160,7 +177,7 @@ describe('UsersService', () => {
 
     const deletedUser = await usersService.remove(1, session);
     expect(deletedUser.nickname).toEqual('Joel');
-    expect(deletedUser).not.toHaveProperty('id');
+    expect(deletedUser.id).toEqual(undefined);
     expect(session).toHaveProperty('userId');
   });
 });

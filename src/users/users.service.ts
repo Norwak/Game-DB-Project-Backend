@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Session } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 
@@ -14,6 +14,10 @@ export class UsersService {
   async find(query: string) {
     const nickname = query || '';
     return await this.usersRepository.find({where: {nickname: Like(`%${nickname}%`)}});
+  }
+
+  async findSome(ids: number[]) {
+    return await this.usersRepository.find({where: {id: In(ids)}});
   }
 
   async findOne(id: number) {
@@ -61,7 +65,7 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async remove(id: number) {
+  async remove(id: number, @Session() session: Record<string, any>) {
     if (!id || id < 1) {
       throw new BadRequestException('id isn\'t a positive number');
     }
@@ -71,6 +75,9 @@ export class UsersService {
       throw new NotFoundException('user not found with given id');
     }
 
+    if (id === session.userId) {
+      delete session.userId;
+    }
     return await this.usersRepository.remove(user);
   }
 }
