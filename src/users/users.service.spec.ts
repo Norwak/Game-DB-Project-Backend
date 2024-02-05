@@ -128,18 +128,39 @@ describe('UsersService', () => {
 
   
 
-  it('[remove] should delete a user with given ID and return them', async () => {
+  it('[remove] should delete a user with given ID and return them when deleting self', async () => {
+    const session: Record<string, any> = {userId: 1};
     const user = await usersService.create({ nickname: 'Joel', password: '12345678' });
-    const deletedUser = await usersService.remove(user.id);
-    expect(deletedUser).toBeDefined();
-    expect(deletedUser).toHaveProperty('password');
+
+    const deletedUser = await usersService.remove(user.id, session);
+    expect(deletedUser.nickname).toEqual('Joel');
+    expect(deletedUser).not.toHaveProperty('id');
+    expect(session).not.toHaveProperty('userId');
   });
 
   it('[remove] should throw a BadRequestException if user\'s id is invalid', async () => {
-    await expect(usersService.remove(undefined)).rejects.toThrow(BadRequestException);
+    const session: Record<string, any> = {userId: 1};
+    await expect(usersService.remove(undefined, session)).rejects.toThrow(BadRequestException);
   });
 
   it('[remove] should throw a NotFoundException if user\'s id doesn\'t exist', async () => {
-    await expect(usersService.remove(123)).rejects.toThrow(NotFoundException);
+    const session: Record<string, any> = {userId: 1};
+    await expect(usersService.remove(123, session)).rejects.toThrow(NotFoundException);
+  });
+
+  it('[remove] should keep session if deletion did not succeed', async () => {
+    const session: Record<string, any> = {userId: 1};
+    await expect(usersService.remove(99, session)).rejects.toThrow(NotFoundException);
+    expect(session).toHaveProperty('userId');
+  });
+
+  it('[remove] should keep session if deletion was initiated by a different user (admin)', async () => {
+    const session: Record<string, any> = {userId: 42};
+    const user = await usersService.create({ nickname: 'Joel', password: '12345678' });
+
+    const deletedUser = await usersService.remove(1, session);
+    expect(deletedUser.nickname).toEqual('Joel');
+    expect(deletedUser).not.toHaveProperty('id');
+    expect(session).toHaveProperty('userId');
   });
 });

@@ -60,7 +60,7 @@ describe('GamesService', () => {
     expect(games[1].releaseDate.getMinutes()).toEqual(40);
   });
 
-  it('[find] should return an empty array', async () => {
+  it('[find] should return an empty array on search query #3', async () => {
     await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
     await gamesService.create({ title: 'Megaman', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
     await gamesService.create({ title: 'Mario', releaseDate: new Date('1995-12-17T03:24:00.000Z') });

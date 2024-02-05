@@ -6,6 +6,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Gamelist } from './entities/gamelist.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { User } from '../users/entities/user.entity';
+import { Game } from '../games/entities/game.entity';
 
 describe('GamelistsService', () => {
   let gamelistsService: GamelistsService;
@@ -152,5 +153,37 @@ describe('GamelistsService', () => {
 
   it('[remove] should throw a NotFoundException if gamelist\'s id doesn\'t exist', async () => {
     await expect(gamelistsService.remove(123)).rejects.toThrow(NotFoundException);
+  });
+
+
+
+  it('[addGames] should add games to playlist and return game IDs', async () => {
+    const gamelist = await gamelistsService.create({ title: 'My ilst' }, testUser);
+    const games = [
+      {id: 1, title: 'Zelda'} as Game,
+      {id: 2, title: 'Mario'} as Game,
+    ];
+
+    const updatedGamelist = await gamelistsService.addGames(gamelist.id, games);
+    expect(updatedGamelist.gamesIds.length).toEqual(2);
+    expect(updatedGamelist.gamesIds[0]).toEqual(1);
+  });
+
+  it('[addGames] should append games, not overwhite whole list', async () => {
+    const gamelist = await gamelistsService.create({ title: 'My ilst' }, testUser);
+    const gameBatch1 = [
+      {id: 1, title: 'Zelda'} as Game,
+      {id: 2, title: 'Mario'} as Game,
+    ];
+    const gameBatch2 = [
+      {id: 3, title: 'Castlevania'} as Game,
+      {id: 4, title: 'Final Fantasy I'} as Game,
+    ];
+
+    let updatedGamelist = await gamelistsService.addGames(gamelist.id, gameBatch1);
+    updatedGamelist = await gamelistsService.addGames(gamelist.id, gameBatch2);
+
+    expect(updatedGamelist.gamesIds.length).toEqual(4);
+    expect(updatedGamelist.gamesIds[2]).toEqual(3);
   });
 });

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 
@@ -142,7 +142,7 @@ describe('UsersController', () => {
 
 
 
-  it('[remove] should delete a user by id and return user object back without id', async () => {
+  it('[remove] should delete a user by id, sign out and return user object back without id', async () => {
     fakeUsersService.remove = () => {
       return Promise.resolve({
         nickname: 'Joel',
