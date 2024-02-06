@@ -7,10 +7,10 @@ GET http://localhost:3000/users/whoami
 
 
 ### Find a user by id
-GET http://localhost:3000/users/1
+GET http://localhost:3000/users/2
 
 
-### Create a user
+### Signup
 POST http://localhost:3000/users/signup
 Content-Type: application/json
 
@@ -27,6 +27,21 @@ Content-Type: application/json
 {
   "nickname": "Simon",
   "password": "12345678"
+}
+
+
+### Signout
+GET http://localhost:3000/users/signout
+
+
+### Set admin
+POST http://localhost:3000/users/setadmin
+Content-Type: application/json
+
+{
+  "userId": 5,
+  "adminKey": "admin_key",
+  "value": true
 }
 
 

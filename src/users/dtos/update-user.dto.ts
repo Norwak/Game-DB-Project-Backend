@@ -12,8 +12,4 @@ export class UpdateUserDto {
   @IsDate()
   @IsOptional()
   lastLogin?: Date;
-
-  @IsBoolean()
-  @IsOptional()
-  isAdmin?: boolean;
 }

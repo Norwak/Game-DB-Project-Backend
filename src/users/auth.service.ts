@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Session } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Session } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { PasswordService } from './password.service';
 
@@ -16,11 +16,14 @@ export class AuthService {
 
   async signin({nickname, password}, @Session() session: Record<string, any>) {
     let [user] = await this.usersService.find(nickname);
-    const passwordsMatch = await this.passwordService.verify(password, user.password);
+    if (!user) {
+      throw new NotFoundException('user with this nickname doesn\'t exist');
+    }
 
+    const passwordsMatch = await this.passwordService.verify(password, user.password);
     if (passwordsMatch) {
-      user = await this.usersService.update(user.id, {lastLogin: new Date()});
       session.userId = user.id;
+      user = await this.usersService.update(user.id, {lastLogin: new Date()}, session);
       return user;
     } else {
       throw new BadRequestException('wrong password');

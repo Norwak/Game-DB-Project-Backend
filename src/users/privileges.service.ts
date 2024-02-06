@@ -18,6 +18,6 @@ export class PrivilegesService {
       throw new BadRequestException('access blocked');
     }
 
-    return await this.usersService.update(userId, {isAdmin: value});
+    return await this.usersService.updateAdmin(userId, value);
   }
 }

@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from './users.service';
 import { PasswordService } from './password.service';
 import { User } from './entities/user.entity';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -108,6 +108,18 @@ describe('AuthService', () => {
     expect(user.id).toEqual(1);
     expect(user.lastLogin.getFullYear()).toEqual(new Date().getFullYear());
     expect(session.userId).toEqual(1);
+  });
+
+  it('[signin] should throw a NotFoundException if user isn\'t found', async () => {
+    fakeUsersService.find = () => {
+      return Promise.resolve([]);
+    };
+
+    const session: Record<string, any> = {};
+    await expect(authService.signin(
+      {nickname: 'Joel', password: '12345678'},
+      session
+    )).rejects.toThrow(NotFoundException);
   });
 
   it('[signin] should throw a BadRequestException if passwords don\'t match', async () => {

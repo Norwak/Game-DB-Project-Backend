@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 import { dataSourceOptions } from '../../test/extra/dataSourceOptions';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -129,25 +129,65 @@ describe('UsersService', () => {
 
   it('[update] should update a user\'s data with given ID and return updated user', async () => {
     const user = await usersService.create({ nickname: 'Jole', password: '12345678' });
-    const updatedUser = await usersService.update(user.id, {nickname: 'Joel'});
+    const session: Record<string, any> = {userId: user.id};
+    const updatedUser = await usersService.update(user.id, {nickname: 'Joel'}, session);
     expect(updatedUser.nickname).toEqual('Joel');
     expect(updatedUser).toHaveProperty('password');
   });
 
   it('[update] should throw a BadRequestException if user\'s id is invalid', async () => {
     const user = await usersService.create({ nickname: 'Jole', password: '12345678' });
-    await expect(usersService.update(-10, { nickname: '' })).rejects.toThrow(BadRequestException);
+    const session: Record<string, any> = {userId: user.id};
+    await expect(usersService.update(-10, { nickname: '' }, session)).rejects.toThrow(BadRequestException);
   });
 
   it('[update] should throw a NotFoundException if user\'s id doesn\'t exist', async () => {
-    await expect(usersService.update(123, { nickname: '' })).rejects.toThrow(NotFoundException);
+    await expect(usersService.update(123, { nickname: '' }, {})).rejects.toThrow(NotFoundException);
+  });
+
+  it('[update] should work only of user is updating self or admin', async () => {
+    const adminUser = await usersService.create({ nickname: 'Admin', password: '12345678' });
+    await usersService.updateAdmin(adminUser.id, true);
+
+    const commonUser = await usersService.create({ nickname: 'Jole', password: '12345678' });
+
+    // admin updates common user
+    let session: Record<string, any> = {userId: adminUser.id};
+    let updatedUser = await usersService.update(commonUser.id, {nickname: 'Oleg'}, session);
+    expect(updatedUser.nickname).toEqual('Oleg');
+
+    // user updates self
+    session = {userId: commonUser.id};
+    updatedUser = await usersService.update(commonUser.id, {nickname: 'Joel'}, session);
+    expect(updatedUser.nickname).toEqual('Joel');
+
+    // user tries to update admin
+    await expect(usersService.update(adminUser.id, {nickname: 'Not admin'}, session)).rejects.toThrow(ForbiddenException);
+  });
+
+
+
+  it('[updateAdmin] should update isAdmin field and return updated user', async () => {
+    const user = await usersService.create({ nickname: 'Joel', password: '12345678' });
+    const updatedUser = await usersService.updateAdmin(user.id, true);
+    expect(updatedUser.nickname).toEqual('Joel');
+    expect(updatedUser.isAdmin).toEqual(true);
+  });
+
+  it('[updateAdmin] should throw a BadRequestException if user\'s id is invalid', async () => {
+    await expect(usersService.updateAdmin(-10, true)).rejects.toThrow(BadRequestException);
+  });
+
+  it('[updateAdmin] should throw a NotFoundException if user\'s id doesn\'t exist', async () => {
+    await expect(usersService.updateAdmin(123, true)).rejects.toThrow(NotFoundException);
   });
 
   
 
   it('[remove] should delete a user with given ID and return them when deleting self', async () => {
-    const session: Record<string, any> = {userId: 1};
+    
     const user = await usersService.create({ nickname: 'Joel', password: '12345678' });
+    const session: Record<string, any> = {userId: user.id};
 
     const deletedUser = await usersService.remove(user.id, session);
     expect(deletedUser.nickname).toEqual('Joel');
@@ -172,12 +212,40 @@ describe('UsersService', () => {
   });
 
   it('[remove] should keep session if deletion was initiated by a different user (admin)', async () => {
-    const session: Record<string, any> = {userId: 42};
+    const adminUser = await usersService.create({ nickname: 'Admin', password: '12345678' });
+    await usersService.updateAdmin(adminUser.id, true);
+
+    const session: Record<string, any> = {userId: adminUser.id};
+
     const user = await usersService.create({ nickname: 'Joel', password: '12345678' });
 
-    const deletedUser = await usersService.remove(1, session);
+    const deletedUser = await usersService.remove(user.id, session);
     expect(deletedUser.nickname).toEqual('Joel');
     expect(deletedUser.id).toEqual(undefined);
     expect(session).toHaveProperty('userId');
+  });
+
+  it('[remove] should work only of user is updating self or admin', async () => {
+    const adminUser = await usersService.create({ nickname: 'Admin', password: '12345678' });
+    await usersService.updateAdmin(adminUser.id, true);
+
+    let commonUser = await usersService.create({ nickname: 'Jole', password: '12345678' });
+
+    // admin deletes common user
+    let session: Record<string, any> = {userId: adminUser.id};
+    let deletedUser = await usersService.remove(commonUser.id, session);
+    expect(deletedUser.id).toEqual(undefined);
+
+    // user deletes self
+    commonUser = await usersService.create({ nickname: 'Jole', password: '12345678' });
+    session = {userId: commonUser.id};
+    deletedUser = await usersService.remove(commonUser.id, session);
+    expect(deletedUser.id).toEqual(undefined);
+    expect(session).not.toHaveProperty('userId');
+
+    // user tries to deletes admin
+    commonUser = await usersService.create({ nickname: 'Jole', password: '12345678' });
+    session = {userId: commonUser.id};
+    await expect(usersService.update(adminUser.id, {nickname: 'Not admin'}, session)).rejects.toThrow(ForbiddenException);
   });
 });

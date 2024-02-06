@@ -12,4 +12,7 @@ export class UserDto {
 
   @Expose()
   lastLogin: Date;
+
+  @Expose()
+  isAdmin: boolean;
 }

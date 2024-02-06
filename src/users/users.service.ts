@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, Session } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, Session } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { In, Like, Repository } from 'typeorm';
@@ -51,33 +51,51 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async update(id: number, newData: UpdateUserDto) {
+  async update(id: number, newData: UpdateUserDto, session: Record<string, any>) {
     if (!id || id < 1) {
       throw new BadRequestException('id isn\'t a positive number');
     }
 
-    const user = await this.usersRepository.findOne({where: {id}});
-    if (!user) {
-      throw new NotFoundException('user not found with given id');
+    const targetUser = await this.findOne(id);
+    const currentUser = await this.findOne(session.userId);
+
+    if (currentUser.isAdmin || currentUser.id === targetUser.id) {
+      Object.assign(targetUser, newData);
+      return await this.usersRepository.save(targetUser);
+    } else {
+      throw new ForbiddenException();
+    }
+  }
+
+  async updateAdmin(id: number, value: boolean) {
+    if (!id || id < 1) {
+      throw new BadRequestException('id isn\'t a positive number');
     }
 
-    Object.assign(user, newData);
+    const user = await this.findOne(id);
+
+    Object.assign(user, {isAdmin: value});
     return await this.usersRepository.save(user);
   }
 
-  async remove(id: number, @Session() session: Record<string, any>) {
+  async remove(id: number, session: Record<string, any>) {
     if (!id || id < 1) {
       throw new BadRequestException('id isn\'t a positive number');
     }
 
-    const user = await this.usersRepository.findOne({where: {id}});
-    if (!user) {
-      throw new NotFoundException('user not found with given id');
-    }
+    const targetUser = await this.findOne(id);
+    const currentUser = await this.findOne(session.userId);
 
-    if (id === session.userId) {
+    // clear session if deleting self
+    if (targetUser.id === currentUser.id) {
       delete session.userId;
     }
-    return await this.usersRepository.remove(user);
+
+    // allow if admin or yourself
+    if (currentUser.isAdmin || targetUser.id === currentUser.id) {
+      return await this.usersRepository.remove(targetUser);
+    } else {
+      throw new ForbiddenException();
+    }
   }
 }

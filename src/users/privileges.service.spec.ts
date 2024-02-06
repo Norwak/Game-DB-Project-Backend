@@ -15,7 +15,7 @@ describe('PrivilegesService', () => {
       find: jest.fn(),
       findOne: jest.fn(),
       create: jest.fn(),
-      update: jest.fn(),
+      updateAdmin: jest.fn(),
       remove: jest.fn()
     }
 
@@ -50,7 +50,7 @@ describe('PrivilegesService', () => {
 
 
   it('[setAdmin] should verify admin key, then change user\'s admin privileges and return user with updated admin property', async () => {
-    fakeUsersService.update = () => {
+    fakeUsersService.updateAdmin = () => {
       return Promise.resolve({
         id: 1,
         nickname: 'Joel',
