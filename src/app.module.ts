@@ -30,7 +30,7 @@ const cookieSession = require('cookie-session');
     GamelistsModule,
     GamesModule,
     GenresModule,
-    UsersModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [
@@ -44,7 +44,7 @@ const cookieSession = require('cookie-session');
           enableImplicitConversion: true,
         }
       }),
-    }
+    },
   ],
 })
 export class AppModule {

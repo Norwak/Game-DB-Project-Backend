@@ -10,7 +10,13 @@ import { UsersModule } from '../users/users.module';
     TypeOrmModule.forFeature([Genre]),
     UsersModule
   ],
-  providers: [GenresService],
+  providers: [
+    GenresService,
+    {
+      provide: 'service',
+      useClass: GenresService
+    }
+  ],
   controllers: [GenresController],
   exports: [GenresService]
 })

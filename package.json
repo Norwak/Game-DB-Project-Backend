@@ -19,6 +19,8 @@
     "test:users": "jest --testRegex='users.*.spec.ts'",
     "test:gamelists": "jest --testRegex='gamelists.*.spec.ts'",
     "test:games": "jest --testRegex='games.*.spec.ts'",
+    "test:consoles": "jest --testRegex='consoles.*.spec.ts'",
+    "test:base-crud": "jest --testRegex='base-crud.*.spec.ts'",
     "test:watch": "jest --watchAll",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
