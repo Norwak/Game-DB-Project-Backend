@@ -157,7 +157,7 @@ describe('GamelistsService', () => {
 
 
 
-  it('[addGames] should add games to playlist and return game IDs', async () => {
+  it('[addGames] should add games to playlist and return playlist with games', async () => {
     const gamelist = await gamelistsService.create({ title: 'My ilst' }, testUser);
     const games = [
       {id: 1, title: 'Zelda', releaseDate: new Date('2020-02-20T12:12:12.000Z')} as Game,
@@ -169,7 +169,7 @@ describe('GamelistsService', () => {
     expect(updatedGamelist.games[0].id).toEqual(1);
   });
 
-  it('[addGames] should append games, not overwhite whole list', async () => {
+  it('[addGames] should append games, not overwhite the whole list', async () => {
     const gamelist = await gamelistsService.create({ title: 'My ilst' }, testUser);
     const gameBatch1 = [
       {id: 1, title: 'Zelda', releaseDate: new Date('2020-02-20T12:12:12.000Z')} as Game,

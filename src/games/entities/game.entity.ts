@@ -17,11 +17,11 @@ export class Game {
   @ManyToMany(type => Gamelist, gamelist => gamelist.games)
   gamelists: Gamelist[];
 
-  @ManyToMany(type => Developer, developer => developer.games)
+  @ManyToMany(type => Developer, developer => developer.games, { nullable: false, cascade: true })
   @JoinTable()
   developers: Developer[];
 
-  @ManyToMany(type => Genre, genre => genre.games)
+  @ManyToMany(type => Genre, genre => genre.games, { nullable: false, cascade: true })
   @JoinTable()
   genres: Genre[];
 }

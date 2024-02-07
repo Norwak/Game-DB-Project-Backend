@@ -1,5 +1,5 @@
 ### Find genres by search query
-GET http://localhost:3000/genres?q=a
+GET http://localhost:3000/genres
 
 
 ### Find a genre by id

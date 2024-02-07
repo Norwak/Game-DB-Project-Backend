@@ -70,6 +70,23 @@ describe('GenresService', () => {
 
 
 
+  it('[findSome] should return an array of genres by ids', async () => {
+    await genresService.create({ title: 'Action' });
+    await genresService.create({ title: 'Adventure' });
+    await genresService.create({ title: 'Puzzle' });
+
+    const genres = await genresService.findSome([1, 2, 3]);
+    expect(genres.length).toEqual(3);
+    expect(genres[2].title).toEqual('Puzzle');
+  });
+
+  it('[findSome] should return an empty array of genres weren\'t found', async () => {
+    const genres = await genresService.findSome([1, 2, 3]);
+    expect(genres.length).toEqual(0);
+  });
+
+
+
   it('[findOne] should return a genre with given id', async () => {
     const genre = await genresService.create({ title: 'Action' });
 
@@ -134,4 +151,8 @@ describe('GenresService', () => {
   it('[remove] should throw a NotFoundException if genre\'s id doesn\'t exist', async () => {
     await expect(genresService.remove(123)).rejects.toThrow(NotFoundException);
   });
+
+
+
+  
 });

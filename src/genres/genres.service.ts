@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Genre } from './entities/genre.entity';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { CreateGenreDto } from './dtos/create-genre.dto';
 import { UpdateGenreDto } from './dtos/update-genre.dto';
 
@@ -16,12 +16,16 @@ export class GenresService {
     return await this.genresRepository.find({where: {title: Like(`%${title}%`)}});
   }
 
+  async findSome(ids: number[]) {
+    return await this.genresRepository.find({where: {id: In(ids)}});
+  }
+
   async findOne(id: number) {
     if (!id || id < 1) {
       throw new BadRequestException('id isn\'t a positive number');
     }
 
-    const genre = await this.genresRepository.findOne({where: {id}});
+    const genre = await this.genresRepository.findOne({where: {id}, relations: ['games']});
     if (!genre) {
       throw new NotFoundException('genre not found with given id');
     }

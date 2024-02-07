@@ -36,7 +36,7 @@ export class GamelistsController {
     return await this.gamelistsService.create(createGamelistDto, user);
   }
 
-  @Post('addGames')
+  @Post('addgames')
   @UseGuards(AuthGuard)
   async addGames(@Body() addGamesDto: AddGamesDto) {
     const games: Game[] = [];

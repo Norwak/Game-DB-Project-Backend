@@ -4,6 +4,7 @@ import { Game } from './entities/game.entity';
 import { Like, Repository } from 'typeorm';
 import { CreateGameDto } from './dtos/create-game.dto';
 import { UpdateGameDto } from './dtos/update-game.dto';
+import { Genre } from '../genres/entities/genre.entity';
 
 @Injectable()
 export class GamesService {
@@ -21,7 +22,7 @@ export class GamesService {
       throw new BadRequestException('id isn\'t a positive number');
     }
 
-    const game = await this.gamesRepository.findOne({where: {id}});
+    const game = await this.gamesRepository.findOne({where: {id}, relations: ['genres']});
     if (!game) {
       throw new NotFoundException('game not found with given id');
     }
@@ -52,29 +53,24 @@ export class GamesService {
   }
 
   async update(id: number, newData: Partial<UpdateGameDto>) {
-    if (!id || id < 1) {
-      throw new BadRequestException('id isn\'t a positive number');
-    }
-
-    const game = await this.gamesRepository.findOne({where: {id}});
-    if (!game) {
-      throw new NotFoundException('game not found with given id');
-    }
-
+    const game = await this.findOne(id);
     Object.assign(game, newData);
     return await this.gamesRepository.save(game);
   }
 
   async remove(id: number) {
-    if (!id || id < 1) {
-      throw new BadRequestException('id isn\'t a positive number');
-    }
-
-    const game = await this.gamesRepository.findOne({where: {id}});
-    if (!game) {
-      throw new NotFoundException('game not found with given id');
-    }
-
+    const game = await this.findOne(id);
     return await this.gamesRepository.remove(game);
+  }
+
+
+
+  async addGenres(gameId: number, genres: Genre[]) {
+    const game = await this.findOne(gameId);
+
+    const ids = new Set(game.genres.map(genre => genre.id));
+    game.genres = [...game.genres, ...genres.filter(genre => !ids.has(genre.id))];
+    
+    return await this.gamesRepository.save(game);
   }
 }

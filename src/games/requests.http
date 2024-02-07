@@ -1,5 +1,5 @@
 ### Find games by search query
-GET http://localhost:3000/games?q=m
+GET http://localhost:3000/games
 
 
 ### Find a game by id
@@ -28,3 +28,13 @@ Content-Type: application/json
 ### Delete a game
 DELETE http://localhost:3000/games/1
 Content-Type: application/json
+
+
+### Add genres
+POST http://localhost:3000/games/addgenres
+Content-Type: application/json
+
+{
+  "gameId": 2,
+  "genreIds": [1, 2, 3]
+}
