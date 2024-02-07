@@ -16,15 +16,9 @@ export class Gamelist {
   @UpdateDateColumn()
   lastUpdated: Date;
 
-  @Column()
-  userId: number;
 
-  @RelationId((gamelist: Gamelist) => gamelist.games)
-  gamesIds: number[];
 
-  
-
-  @ManyToOne(type => User, user => user.gamelists, { nullable: false })
+  @ManyToOne(type => User, user => user.gamelists, { nullable: false, eager: true })
   @JoinColumn()
   user: User;
 

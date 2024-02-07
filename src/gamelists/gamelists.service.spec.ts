@@ -160,30 +160,30 @@ describe('GamelistsService', () => {
   it('[addGames] should add games to playlist and return game IDs', async () => {
     const gamelist = await gamelistsService.create({ title: 'My ilst' }, testUser);
     const games = [
-      {id: 1, title: 'Zelda'} as Game,
-      {id: 2, title: 'Mario'} as Game,
+      {id: 1, title: 'Zelda', releaseDate: new Date('2020-02-20T12:12:12.000Z')} as Game,
+      {id: 2, title: 'Mario', releaseDate: new Date('2020-02-20T12:12:12.000Z')} as Game,
     ];
 
     const updatedGamelist = await gamelistsService.addGames(gamelist.id, games);
-    expect(updatedGamelist.gamesIds.length).toEqual(2);
-    expect(updatedGamelist.gamesIds[0]).toEqual(1);
+    expect(updatedGamelist.games.length).toEqual(2);
+    expect(updatedGamelist.games[0].id).toEqual(1);
   });
 
   it('[addGames] should append games, not overwhite whole list', async () => {
     const gamelist = await gamelistsService.create({ title: 'My ilst' }, testUser);
     const gameBatch1 = [
-      {id: 1, title: 'Zelda'} as Game,
-      {id: 2, title: 'Mario'} as Game,
+      {id: 1, title: 'Zelda', releaseDate: new Date('2020-02-20T12:12:12.000Z')} as Game,
+      {id: 2, title: 'Mario', releaseDate: new Date('2020-02-20T12:12:12.000Z')} as Game,
     ];
     const gameBatch2 = [
-      {id: 3, title: 'Castlevania'} as Game,
-      {id: 4, title: 'Final Fantasy I'} as Game,
+      {id: 3, title: 'Castlevania', releaseDate: new Date('2020-02-20T12:12:12.000Z')} as Game,
+      {id: 4, title: 'Final Fantasy I', releaseDate: new Date('2020-02-20T12:12:12.000Z')} as Game,
     ];
 
     let updatedGamelist = await gamelistsService.addGames(gamelist.id, gameBatch1);
     updatedGamelist = await gamelistsService.addGames(gamelist.id, gameBatch2);
 
-    expect(updatedGamelist.gamesIds.length).toEqual(4);
-    expect(updatedGamelist.gamesIds[2]).toEqual(3);
+    expect(updatedGamelist.games.length).toEqual(4);
+    expect(updatedGamelist.games[2].id).toEqual(3);
   });
 });

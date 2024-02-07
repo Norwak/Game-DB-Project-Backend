@@ -23,7 +23,7 @@ export class GamelistsService {
       throw new BadRequestException('id isn\'t a positive number');
     }
 
-    const gamelist = await this.gamelistsRepository.findOne({where: {id}});
+    const gamelist = await this.gamelistsRepository.findOne({where: {id}, relations: ['games']});
     if (!gamelist) {
       throw new NotFoundException('gamelist not found with given id');
     }
@@ -85,6 +85,7 @@ export class GamelistsService {
       throw new NotFoundException('gamelist not found with given id');
     }
 
+    
     gamelist.games = games;
 
     return await this.gamelistsRepository.save(gamelist);

@@ -5,11 +5,13 @@ import { Gamelist } from './entities/gamelist.entity';
 import { BadRequestException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
+import { GamesService } from '../games/games.service';
 
 describe('GamelistsController', () => {
   let gamelistsController: GamelistsController;
   let fakeGamelistsService: Partial<GamelistsService>;
   let fakeUsersService: Partial<UsersService>;
+  let fakeGamesService: Partial<GamesService>;
 
   beforeEach(async () => {
     fakeGamelistsService = {
@@ -24,6 +26,10 @@ describe('GamelistsController', () => {
       findOne: jest.fn(),
     }
 
+    fakeGamesService = {
+      findOne: jest.fn(),
+    }
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [GamelistsController],
       providers: [
@@ -34,6 +40,10 @@ describe('GamelistsController', () => {
         {
           provide: UsersService,
           useValue: fakeUsersService,
+        },
+        {
+          provide: GamesService,
+          useValue: fakeGamesService,
         },
       ]
     }).compile();

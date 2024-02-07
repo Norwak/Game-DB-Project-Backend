@@ -1,5 +1,8 @@
-import { Expose } from "class-transformer";
+import { Expose, Type } from "class-transformer";
 import { Game } from "../../games/entities/game.entity";
+import { User } from "../../users/entities/user.entity";
+import { UserDto } from "../../users/dtos/user.dto";
+import { GameDto } from "../../games/dtos/game.dto";
 
 export class GamelistDto {
   @Expose()
@@ -15,8 +18,10 @@ export class GamelistDto {
   lastUpdated: Date;
 
   @Expose()
-  userId: number;
+  @Type(() => UserDto)
+  user: User;
 
   @Expose()
-  gamesIds: number[];
+  @Type(() => GameDto)
+  games: Game[];
 }
