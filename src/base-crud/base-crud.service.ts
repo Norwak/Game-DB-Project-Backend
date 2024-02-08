@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, NotFoundException } from '@nestjs/common';
 import { FindOptionsWhere, In, Like, Repository } from 'typeorm';
 import { BaseCrudEntity } from './entitites/base-crud.entity';
 import { CreateBaseCrudDto } from './dtos/create-base-crud.dto';
@@ -6,7 +6,7 @@ import { UpdateBaseCrudDto } from './dtos/update-base-crud.dto';
 
 export class BaseCrudService<T extends BaseCrudEntity> {
   constructor(
-    private repository: Repository<T>
+    @Inject('repository') private repository: Repository<T>
   ) {}
 
   async find(query: string) {
@@ -18,17 +18,17 @@ export class BaseCrudService<T extends BaseCrudEntity> {
     return await this.repository.find({where: {id: In(ids)} as FindOptionsWhere<T>});
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, relations: string[] = ['games']) {
     if (!id || id < 1) {
       throw new BadRequestException('id isn\'t a positive number');
     }
 
-    const genre = await this.repository.findOne({where: {id} as FindOptionsWhere<T>, relations: ['games']});
-    if (!genre) {
-      throw new NotFoundException('genre not found with given id');
+    const item = await this.repository.findOne({where: {id} as FindOptionsWhere<T>, relations});
+    if (!item) {
+      throw new NotFoundException('item not found with given id');
     }
 
-    return genre;
+    return item;
   }
 
   async create({title}: CreateBaseCrudDto) {
@@ -36,23 +36,25 @@ export class BaseCrudService<T extends BaseCrudEntity> {
       throw new BadRequestException('title shouldn\'t be empty');
     }
 
-    const genres = await this.repository.find({where: {title} as FindOptionsWhere<T>});
-    if (genres.length > 0) {
-      throw new BadRequestException('genre already exists');
+    const items = await this.repository.find({where: {title} as FindOptionsWhere<T>});
+    if (items.length > 0) {
+      throw new BadRequestException('item already exists');
     }
 
-    const genre = this.repository.create({title} as T);
-    return await this.repository.save(genre);
+    const item = this.repository.create({title} as T);
+    return await this.repository.save(item);
   }
 
   async update(id: number, newData: UpdateBaseCrudDto) {
-    const genre = await this.findOne(id);
-    Object.assign(genre, newData);
-    return await this.repository.save(genre);
+    const relations = [];
+    const item = await this.findOne(id, relations);
+    Object.assign(item, newData);
+    return await this.repository.save(item);
   }
 
   async remove(id: number) {
-    const genre = await this.findOne(id);
+    const relations = [];
+    const genre = await this.findOne(id, relations);
     return await this.repository.remove(genre);
   }
 }

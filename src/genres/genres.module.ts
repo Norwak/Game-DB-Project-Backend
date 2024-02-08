@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Genre } from './entities/genre.entity';
 import { GenresService } from './genres.service';
 import { GenresController } from './genres.controller';
 import { UsersModule } from '../users/users.module';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { UsersModule } from '../users/users.module';
     {
       provide: 'service',
       useClass: GenresService
-    }
+    },
   ],
   controllers: [GenresController],
   exports: [GenresService]
