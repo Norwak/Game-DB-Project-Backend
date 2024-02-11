@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, Inject } from "@nestjs/common"
-import { Observable } from "rxjs"
-import { UsersService } from "../users/users.service";
+import { UsersService } from "../modules/users/users.service";
 
 export class AdminGuard implements CanActivate {
   constructor(
