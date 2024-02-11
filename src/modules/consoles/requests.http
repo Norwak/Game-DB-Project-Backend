@@ -1,0 +1,29 @@
+### Find consoles by search query (?q=)
+GET http://localhost:3000/consoles
+
+
+### Find a console by id
+GET http://localhost:3000/consoles/1
+
+
+### Create a console
+POST http://localhost:3000/consoles
+Content-Type: application/json
+
+{
+  "title": "PS4"
+}
+
+
+### Update a console
+PATCH http://localhost:3000/consoles/1
+Content-Type: application/json
+
+{
+  "title": "XBOX ONE"
+}
+
+
+### Delete a console
+DELETE http://localhost:3000/consoles/1
+Content-Type: application/json

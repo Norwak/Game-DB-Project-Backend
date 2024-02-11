@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DevelopersService } from './developers.service';
+import { ConsolesService } from './consoles.service';
 import { DataSource } from 'typeorm';
 import { dataSourceOptions } from '../../../test/extra/dataSourceOptions';
+import { Console } from './entities/console.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Developer } from './entities/developer.entity';
 
-describe('DevelopersService', () => {
-  let developersService: DevelopersService;
+describe('ConsolesService', () => {
+  let service: ConsolesService;
   let testingModule: TestingModule;
   let dataSource: DataSource;
 
@@ -16,15 +16,15 @@ describe('DevelopersService', () => {
 
     testingModule = await Test.createTestingModule({
       providers: [
-        DevelopersService,
+        ConsolesService,
         {
-          provide: getRepositoryToken(Developer),
-          useValue: dataSource.getRepository(Developer),
+          provide: getRepositoryToken(Console),
+          useValue: dataSource.getRepository(Console),
         },
       ],
     }).compile();
 
-    developersService = testingModule.get<DevelopersService>(DevelopersService);
+    service = testingModule.get<ConsolesService>(ConsolesService);
   });
 
   afterEach(async () => {
@@ -34,6 +34,6 @@ describe('DevelopersService', () => {
 
 
   it('should be defined', () => {
-    expect(developersService).toBeDefined();
+    expect(service).toBeDefined();
   });
 });

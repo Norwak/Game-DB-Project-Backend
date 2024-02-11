@@ -2,6 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "t
 import { Gamelist } from "../../gamelists/entities/gamelist.entity";
 import { Developer } from "../../developers/entities/developer.entity";
 import { Genre } from "../../genres/entities/genre.entity";
+import { Console } from "../../consoles/entities/console.entity";
 
 @Entity()
 export class Game {
@@ -16,6 +17,10 @@ export class Game {
 
   @ManyToMany(type => Gamelist, gamelist => gamelist.games)
   gamelists: Gamelist[];
+
+  @ManyToMany(type => Console, console => console.games, { nullable: false, cascade: true })
+  @JoinTable()
+  consoles: Console[];
 
   @ManyToMany(type => Developer, developer => developer.games, { nullable: false, cascade: true })
   @JoinTable()

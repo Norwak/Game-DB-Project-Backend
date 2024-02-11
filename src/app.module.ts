@@ -14,6 +14,8 @@ import { GamelistsModule } from './modules/gamelists/gamelists.module';
 import { GamesModule } from './modules/games/games.module';
 import { GenresModule } from './modules/genres/genres.module';
 import { UsersModule } from './modules/users/users.module';
+import { ConsolesModule } from './modules/consoles/consoles.module';
+import { Console } from './modules/consoles/entities/console.entity';
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -21,7 +23,7 @@ const cookieSession = require('cookie-session');
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: process.env.DEV_DB_NAME,
-      entities: [Developer, Gamelist, Game, Genre, User],
+      entities: [Console, Developer, Gamelist, Game, Genre, User],
       synchronize: true,
       migrations: [],
       migrationsRun: (process.env.DEV_MIGRATIONS_RUN === 'true'),
@@ -30,7 +32,8 @@ const cookieSession = require('cookie-session');
     GamelistsModule,
     GamesModule,
     GenresModule,
-    UsersModule
+    UsersModule,
+    ConsolesModule
   ],
   controllers: [AppController],
   providers: [
