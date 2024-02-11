@@ -1,5 +1,5 @@
-### Find developers by search query
-GET http://localhost:3000/developers?q=m
+### Find developers by search query (?q=)
+GET http://localhost:3000/developers
 
 
 ### Find a developer by id

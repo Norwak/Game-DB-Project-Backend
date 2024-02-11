@@ -1,4 +1,4 @@
-### Find genres by search query
+### Find genres by search query (?q=)
 GET http://localhost:3000/genres
 
 
