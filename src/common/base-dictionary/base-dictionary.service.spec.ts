@@ -4,15 +4,41 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { BaseDictionaryTestEntity } from './entities/base-dictionary-test.entity';
 import { dataSourceOptions } from '../../../test/extra/dataSourceOptions';
+import { GamesService } from '../../modules/games/games.service';
+import { Game } from '../../modules/games/entities/game.entity';
+import { Genre } from '../../modules/genres/entities/genre.entity';
+import { Developer } from '../../modules/developers/entities/developer.entity';
+import { Console } from '../../modules/consoles/entities/console.entity';
 
 describe('BaseDictionaryService', () => {
   let baseDictionaryService: BaseDictionaryService<BaseDictionaryTestEntity>;
   let testingModule: TestingModule;
   let dataSource: DataSource;
+  let fakeGamesService: Partial<GamesService>;
+  const testGenres = [
+    {id: 1, title: 'Action'} as Genre,
+    {id: 2, title: 'Adventure'} as Genre,
+  ];
+  const testDevelopers = [
+    {id: 1, title: 'Capcom'} as Developer,
+    {id: 2, title: 'Konami'} as Developer,
+  ];
+  const testConsoles = [
+    {id: 1, title: 'PS4'} as Console,
+  ];
 
   beforeEach(async () => {
     dataSource = new DataSource(dataSourceOptions);
     await dataSource.initialize();
+
+    await dataSource.createQueryBuilder().insert().into(Genre).values(testGenres).execute();
+    await dataSource.createQueryBuilder().insert().into(Developer).values(testDevelopers).execute();
+    await dataSource.createQueryBuilder().insert().into(Console).values(testConsoles).execute();
+
+    fakeGamesService = {
+      findOne: jest.fn(),
+      saveMeta: jest.fn(),
+    };
 
     testingModule = await Test.createTestingModule({
       providers: [
@@ -20,6 +46,10 @@ describe('BaseDictionaryService', () => {
         {
           provide: 'repository',
           useValue: dataSource.getRepository(BaseDictionaryTestEntity),
+        },
+        {
+          provide: GamesService,
+          useValue: fakeGamesService,
         },
       ],
     }).compile();
@@ -147,5 +177,84 @@ describe('BaseDictionaryService', () => {
 
   it('[remove] should throw a NotFoundException if item\'s id doesn\'t exist', async () => {
     await expect(baseDictionaryService.remove(123)).rejects.toThrow(NotFoundException);
+  });
+
+
+
+  it('[addtogame] should append genres to a game', async () => {
+    fakeGamesService.findOne = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: [], developers: [], consoles: []
+      } as Game);
+    }
+
+    // add genres
+    fakeGamesService.saveMeta = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: testGenres, developers: [], consoles: []
+      } as Game);
+    }
+
+    let addToGameDto = {
+      gameId: 1,
+      metaName: 'genres',
+      metaIds: [1, 2],
+    }
+    let updatedGame = await baseDictionaryService.addtogame(addToGameDto);
+    expect(updatedGame.title).toEqual("Castlevalia");
+    expect(updatedGame.genres).toEqual(testGenres);
+    expect(updatedGame.genres[0].id).toEqual(1);
+
+    // add developers
+    fakeGamesService.saveMeta = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: testGenres, developers: testDevelopers, consoles: []
+      } as Game);
+    }
+
+    addToGameDto = {
+      gameId: 1, metaName: 'developers', metaIds: [1, 2],
+    }
+    updatedGame = await baseDictionaryService.addtogame(addToGameDto);
+    expect(updatedGame.genres).toEqual(testGenres);
+    expect(updatedGame.developers).toEqual(testDevelopers);
+
+    // add consoles
+    fakeGamesService.saveMeta = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: testGenres, developers: testDevelopers, consoles: testConsoles
+      } as Game);
+    }
+    
+    addToGameDto = {
+      gameId: 1, metaName: 'consoles', metaIds: [1],
+    }
+    updatedGame = await baseDictionaryService.addtogame(addToGameDto);
+    expect(updatedGame.genres).toEqual(testGenres);
+    expect(updatedGame.developers).toEqual(testDevelopers);
+    expect(updatedGame.consoles).toEqual(testConsoles);
+  });
+
+  it('[addtogame] should check if meta exists and the game has it', async () => {
+    fakeGamesService.findOne = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: [], developers: []
+      } as Game);
+    }
+
+    let addToGameDto = {
+      gameId: 1, metaName: 'none', metaIds: [1],
+    }
+    await expect(baseDictionaryService.addtogame(addToGameDto)).rejects.toThrow(BadRequestException);
+
+    addToGameDto = {
+      gameId: 1, metaName: 'console', metaIds: [1],
+    }
+    await expect(baseDictionaryService.addtogame(addToGameDto)).rejects.toThrow(BadRequestException);
   });
 });

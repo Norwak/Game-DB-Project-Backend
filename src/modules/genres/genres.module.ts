@@ -4,11 +4,13 @@ import { Genre } from './entities/genre.entity';
 import { GenresService } from './genres.service';
 import { GenresController } from './genres.controller';
 import { UsersModule } from '../users/users.module';
+import { GamesModule } from '../games/games.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Genre]),
-    UsersModule
+    UsersModule,
+    GamesModule
   ],
   providers: [
     GenresService,

@@ -1,0 +1,1 @@
+export const dictionaryList = ['genres', 'developers', 'consoles'];

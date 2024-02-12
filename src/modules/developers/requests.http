@@ -27,3 +27,14 @@ Content-Type: application/json
 ### Delete a developer
 DELETE http://localhost:3000/developers/1
 Content-Type: application/json
+
+
+### Add developers to a game
+PATCH http://localhost:3000/developers/addtogame
+Content-Type: application/json
+
+{
+  "gameId": 2,
+  "metaName": "developers",
+  "metaIds": [1, 2]
+}

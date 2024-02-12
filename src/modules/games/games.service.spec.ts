@@ -146,52 +146,16 @@ describe('GamesService', () => {
 
 
 
-  it('[addGenres] should add genres to game and return game with genres', async () => {
+  it('[saveMeta] should update meta', async () => {
     const game = await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
-    const genres = [
+    game.genres = [
       {id: 1, title: 'Action'} as Genre,
       {id: 2, title: 'Adventure'} as Genre,
     ];
 
-    const updatedGame = await gamesService.addGenres(game.id, genres);
+    const updatedGame = await gamesService.saveMeta(game);
+    expect(updatedGame.id).toEqual(1);
     expect(updatedGame.genres.length).toEqual(2);
-    expect(updatedGame.genres[0].id).toEqual(1);
-  });
-
-  it('[addGenres] should append genres, not overwhite the whole list', async () => {
-    const game = await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
-    const genresBatch1 = [
-      {id: 1, title: 'Action'} as Genre,
-      {id: 2, title: 'Adventure'} as Genre,
-    ];
-    const genresBatch2 = [
-      {id: 3, title: 'Platformer'} as Genre,
-      {id: 4, title: 'Test genre'} as Genre,
-    ];
-
-    let updatedGame = await gamesService.addGenres(game.id, genresBatch1);
-    updatedGame = await gamesService.addGenres(game.id, genresBatch2);
-
-    expect(updatedGame.genres.length).toEqual(4);
-    expect(updatedGame.genres[2].id).toEqual(3);
-  });
-
-  it('[addGenres] should merge genres without duplication', async () => {
-    const game = await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
-    const genresBatch1 = [
-      {id: 1, title: 'Action'} as Genre,
-      {id: 2, title: 'Adventure'} as Genre,
-    ];
-    const genresBatch2 = [
-      {id: 2, title: 'Adventure'} as Genre,
-      {id: 3, title: 'Platformer'} as Genre,
-    ];
-
-    let updatedGame = await gamesService.addGenres(game.id, genresBatch1);
-    updatedGame = await gamesService.addGenres(game.id, genresBatch2);
-
-    expect(updatedGame.genres.length).toEqual(3);
-    expect(updatedGame.genres[1].id).toEqual(2);
-    expect(updatedGame.genres[2].id).toEqual(3);
+    expect(updatedGame.genres[0].title).toEqual('Action');
   });
 });

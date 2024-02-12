@@ -5,12 +5,10 @@ import { Game } from './entities/game.entity';
 import { BadRequestException } from '@nestjs/common';
 import { GenresService } from '../genres/genres.service';
 import { Genre } from '../genres/entities/genre.entity';
-import { BaseCrudService } from '../../common/base-crud/base-crud.service';
 
 describe('GamesController', () => {
   let gamesController: GamesController;
   let fakeGamesService: Partial<GamesService>;
-  let fakeGenresService: Partial<BaseCrudService<Genre>>;
 
   beforeEach(async () => {
     fakeGamesService = {
@@ -21,20 +19,12 @@ describe('GamesController', () => {
       remove: jest.fn()
     }
 
-    fakeGenresService = {
-      findSome: jest.fn(),
-    }
-
     const module: TestingModule = await Test.createTestingModule({
       controllers: [GamesController],
       providers: [
         {
           provide: GamesService,
           useValue: fakeGamesService,
-        },
-        {
-          provide: GenresService,
-          useValue: fakeGenresService,
         },
       ]
     }).compile();
@@ -113,33 +103,5 @@ describe('GamesController', () => {
     expect(deletedGame).toHaveProperty('title');
     expect(deletedGame).toHaveProperty('releaseDate');
     expect(deletedGame).not.toHaveProperty('id');
-  });
-
-
-
-  it('[addGenres] should get genre entities and add them to games', async () => {
-    fakeGenresService.findSome = () => {
-      return Promise.resolve([
-        {id: 1, title: 'Action'} as Genre,
-        {id: 2, title: 'Adventure'} as Genre,
-        {id: 3, title: 'Platformer'} as Genre,
-      ]);
-    };
-
-    fakeGamesService.addGenres = () => {
-      return Promise.resolve({
-        id: 1, title: 'Castlevania', releaseDate: new Date('1995-12-01T05:05:05.000Z'),
-        genres: [
-          {id: 1, title: 'Action'} as Genre,
-          {id: 2, title: 'Adventure'} as Genre,
-          {id: 3, title: 'Platformer'} as Genre,
-        ],
-      } as Game);
-    };
-
-    const updatedGame = await gamesController.addGenres({gameId: 1, genreIds: [1, 2, 3]});
-    expect(updatedGame.id).toEqual(1);
-    expect(updatedGame.genres.length).toEqual(3);
-    expect(updatedGame.genres[1].id).toEqual(2);
   });
 });

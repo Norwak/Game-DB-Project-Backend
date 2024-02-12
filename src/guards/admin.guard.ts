@@ -11,7 +11,7 @@ export class AdminGuard implements CanActivate {
     if (!request.session.userId) {
       return false;
     }
-
+    
     const currentUser = await this.usersService.findOne(request.session.userId);
     return currentUser.isAdmin;
   }

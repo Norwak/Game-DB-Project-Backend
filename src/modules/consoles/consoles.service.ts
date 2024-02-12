@@ -3,12 +3,14 @@ import { BaseDictionaryService } from '../../common/base-dictionary/base-diction
 import { Console } from './entities/console.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { GamesService } from '../games/games.service';
 
 @Injectable()
 export class ConsolesService extends BaseDictionaryService<Console> {
   constructor(
-    @InjectRepository(Console) private consolesRepository: Repository<Console>,
+    @InjectRepository(Console) protected consolesRepository: Repository<Console>,
+    protected gamesService: GamesService
   ) {
-    super(consolesRepository);
+    super(consolesRepository, gamesService);
   }
 }

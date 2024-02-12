@@ -3,7 +3,7 @@ GET http://localhost:3000/games
 
 
 ### Find a game by id
-GET http://localhost:3000/games/2
+GET http://localhost:3000/games/1
 
 
 ### Create a game

@@ -76,17 +76,10 @@ export class GamelistsService {
 
 
   async addGames(gamelistId: number, games: Game[]) {
-    if (!gamelistId || gamelistId < 1) {
-      throw new BadRequestException('id isn\'t a positive number');
-    }
+    const gamelist = await this.findOne(gamelistId);
 
-    const gamelist = await this.gamelistsRepository.findOne({where: {id: gamelistId}});
-    if (!gamelist) {
-      throw new NotFoundException('gamelist not found with given id');
-    }
-
-    
-    gamelist.games = games;
+    const ids = new Set(gamelist.games.map((game) => game.id));
+    gamelist.games = [...gamelist.games, ...games.filter((game) => !ids.has(game.id))];
 
     return await this.gamelistsRepository.save(gamelist);
   }

@@ -3,10 +3,14 @@ import { FindOptionsWhere, In, Like, Repository } from 'typeorm';
 import { BaseDictionaryEntity } from './entities/base-dictionary.entity';
 import { CreateBaseDictionaryDto } from './dtos/create-base-dictionary.dto';
 import { UpdateBaseDictionaryDto } from './dtos/update-base-dictionary.dto';
+import { AddToGameDto } from './dtos/add-to-game.dto';
+import { GamesService } from '../../modules/games/games.service';
+import { dictionaryList } from '../dictionary.list';
 
 export class BaseDictionaryService<T extends BaseDictionaryEntity> {
   constructor(
-    @Inject('repository') private repository: Repository<T>
+    @Inject('repository') protected repository: Repository<T>,
+    protected gamesService: GamesService
   ) {}
 
   async find(query: string) {
@@ -56,5 +60,31 @@ export class BaseDictionaryService<T extends BaseDictionaryEntity> {
     const relations = [];
     const genre = await this.findOne(id, relations);
     return await this.repository.remove(genre);
+  }
+
+
+
+  async addtogame({gameId, metaName, metaIds}: AddToGameDto) {
+    const game = await this.gamesService.findOne(gameId);
+   
+    if (!dictionaryList.includes(metaName)) {
+      throw new BadRequestException('meta doesn\'t exist');
+    };
+
+    const gameMeta: BaseDictionaryEntity[] = game[metaName];
+    if (!gameMeta) {
+      throw new BadRequestException('game doesn\'t have this meta');
+    }
+
+    const metaItems = await this.findSome(metaIds);
+    
+    const ids = new Set(gameMeta.map((metaItem: BaseDictionaryEntity) => metaItem.id));
+    game[metaName] = [...gameMeta, ...metaItems.filter((metaItem: BaseDictionaryEntity) => !ids.has(metaItem.id))];
+    
+    return await this.gamesService.saveMeta(game);
+  }
+
+  async removefromgame() {
+
   }
 }

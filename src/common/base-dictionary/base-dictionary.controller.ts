@@ -4,6 +4,7 @@ import { BaseDictionaryEntity } from "./entities/base-dictionary.entity";
 import { CreateBaseDictionaryDto } from "./dtos/create-base-dictionary.dto";
 import { UpdateBaseDictionaryDto } from "./dtos/update-base-dictionary.dto";
 import { AdminGuard } from "../../guards/admin.guard";
+import { AddToGameDto } from "./dtos/add-to-game.dto";
 
 export class BaseDictionaryController<T extends BaseDictionaryEntity> {
   constructor(
@@ -24,6 +25,13 @@ export class BaseDictionaryController<T extends BaseDictionaryEntity> {
   @UseGuards(AdminGuard)
   async create(@Body() createDeveloperDto: CreateBaseDictionaryDto) {
     return await this.service.create(createDeveloperDto);
+  }
+
+  @Patch('addtogame')
+  @UseGuards(AdminGuard)
+  async addtogame(@Body() addToGameDto: AddToGameDto) {
+    await this.service.addtogame(addToGameDto);
+    return {};
   }
 
   @Patch(':id')

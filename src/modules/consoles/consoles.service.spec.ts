@@ -4,11 +4,13 @@ import { DataSource } from 'typeorm';
 import { dataSourceOptions } from '../../../test/extra/dataSourceOptions';
 import { Console } from './entities/console.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { GamesService } from '../games/games.service';
 
 describe('ConsolesService', () => {
   let service: ConsolesService;
   let testingModule: TestingModule;
   let dataSource: DataSource;
+  let fakeGamesService: Partial<GamesService>;
 
   beforeEach(async () => {
     dataSource = new DataSource(dataSourceOptions);
@@ -20,6 +22,10 @@ describe('ConsolesService', () => {
         {
           provide: getRepositoryToken(Console),
           useValue: dataSource.getRepository(Console),
+        },
+        {
+          provide: GamesService,
+          useValue: fakeGamesService,
         },
       ],
     }).compile();

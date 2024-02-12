@@ -4,7 +4,8 @@ import { Game } from './entities/game.entity';
 import { Like, Repository } from 'typeorm';
 import { CreateGameDto } from './dtos/create-game.dto';
 import { UpdateGameDto } from './dtos/update-game.dto';
-import { Genre } from '../genres/entities/genre.entity';
+import { SaveGameMetaDto } from './dtos/save-game-meta.dto';
+import { dictionaryList } from '../../common/dictionary.list';
 
 @Injectable()
 export class GamesService {
@@ -22,7 +23,7 @@ export class GamesService {
       throw new BadRequestException('id isn\'t a positive number');
     }
 
-    const game = await this.gamesRepository.findOne({where: {id}, relations: ['genres']});
+    const game = await this.gamesRepository.findOne({where: {id}, relations: dictionaryList});
     if (!game) {
       throw new NotFoundException('game not found with given id');
     }
@@ -65,12 +66,7 @@ export class GamesService {
 
 
 
-  async addGenres(gameId: number, genres: Genre[]) {
-    const game = await this.findOne(gameId);
-
-    const ids = new Set(game.genres.map(genre => genre.id));
-    game.genres = [...game.genres, ...genres.filter(genre => !ids.has(genre.id))];
-    
-    return await this.gamesRepository.save(game);
+  async saveMeta(saveGameMetaDto: SaveGameMetaDto) {
+    return await this.gamesRepository.save(saveGameMetaDto);
   }
 }

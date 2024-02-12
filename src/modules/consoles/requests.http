@@ -27,3 +27,14 @@ Content-Type: application/json
 ### Delete a console
 DELETE http://localhost:3000/consoles/1
 Content-Type: application/json
+
+
+### Add consoles to a game
+PATCH http://localhost:3000/consoles/addtogame
+Content-Type: application/json
+
+{
+  "gameId": 1,
+  "metaName": "consoles",
+  "metaIds": [2]
+}

@@ -1,16 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { CreateGameDto } from './dtos/create-game.dto';
 import { UpdateGameDto } from './dtos/update-game.dto';
-import { GenresService } from '../genres/genres.service';
-import { addGenresDto } from './dtos/add-genres.dto';
-import { AuthGuard } from '../../guards/auth.guard';
 
 @Controller('games')
 export class GamesController {
   constructor(
-    private gamesService: GamesService,
-    private genresService: GenresService
+    private gamesService: GamesService
   ) {}
 
   @Get()
@@ -26,13 +22,6 @@ export class GamesController {
   @Post()
   async create(@Body() createGameDto: CreateGameDto) {
     return await this.gamesService.create(createGameDto);
-  }
-
-  @Post('addgenres')
-  @UseGuards(AuthGuard)
-  async addGenres(@Body() addGenresDto: addGenresDto) {
-    const genres = await this.genresService.findSome(addGenresDto.genreIds);
-    return this.gamesService.addGenres(addGenresDto.gameId, genres);
   }
 
   @Patch(':id')

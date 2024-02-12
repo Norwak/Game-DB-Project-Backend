@@ -4,11 +4,13 @@ import { Developer } from './entities/developer.entity';
 import { DevelopersService } from './developers.service';
 import { DevelopersController } from './developers.controller';
 import { UsersModule } from '../users/users.module';
+import { GamesModule } from '../games/games.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Developer]),
-    UsersModule
+    UsersModule,
+    GamesModule
   ],
   providers: [
     DevelopersService,

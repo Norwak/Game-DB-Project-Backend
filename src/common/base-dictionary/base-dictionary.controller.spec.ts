@@ -5,6 +5,7 @@ import { BaseDictionaryService } from './base-dictionary.service';
 import { BadRequestException } from '@nestjs/common';
 import { UsersService } from '../../modules/users/users.service';
 import { User } from '../../modules/users/entities/user.entity';
+import { Game } from '../../modules/games/entities/game.entity';
 
 describe('BaseDictionaryController', () => {
   let baseDictionaryController: BaseDictionaryController<BaseDictionaryEntity>;
@@ -16,6 +17,7 @@ describe('BaseDictionaryController', () => {
       find: jest.fn(),
       findOne: jest.fn(),
       create: jest.fn(),
+      addtogame: jest.fn(),
       update: jest.fn(),
       remove: jest.fn()
     }
@@ -88,6 +90,27 @@ describe('BaseDictionaryController', () => {
     }
 
     await expect(baseDictionaryController.create({title: undefined})).rejects.toThrow(BadRequestException);
+  });
+
+
+
+  it('[addtogame] should return empty object if meta insertion was correct', async () => {
+    fakeBaseDictionaryService.addtogame = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: [
+          {id: 1, title: 'Action'},
+          {id: 2, title: 'Adventure'},
+        ], developers: [], consoles: []
+      } as Game);
+    }
+
+    const gameId = 1;
+    const metaName = 'genres';
+    const metaIds = [1, 2];
+
+    const result = await baseDictionaryController.addtogame({gameId, metaName, metaIds});
+    expect(result).toEqual({});
   });
 
 
