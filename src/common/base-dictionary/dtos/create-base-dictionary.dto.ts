@@ -1,6 +1,6 @@
 import { IsString } from "class-validator";
 
-export class CreateBaseCrudDto {
+export class CreateBaseDictionaryDto {
   @IsString()
   title: string;
 }

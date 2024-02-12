@@ -1,10 +1,10 @@
 import { BadRequestException, Inject, NotFoundException } from '@nestjs/common';
 import { FindOptionsWhere, In, Like, Repository } from 'typeorm';
-import { BaseCrudEntity } from './entities/base-crud.entity';
-import { CreateBaseCrudDto } from './dtos/create-base-crud.dto';
-import { UpdateBaseCrudDto } from './dtos/update-base-crud.dto';
+import { BaseDictionaryEntity } from './entities/base-dictionary.entity';
+import { CreateBaseDictionaryDto } from './dtos/create-base-dictionary.dto';
+import { UpdateBaseDictionaryDto } from './dtos/update-base-dictionary.dto';
 
-export class BaseCrudService<T extends BaseCrudEntity> {
+export class BaseDictionaryService<T extends BaseDictionaryEntity> {
   constructor(
     @Inject('repository') private repository: Repository<T>
   ) {}
@@ -31,7 +31,7 @@ export class BaseCrudService<T extends BaseCrudEntity> {
     return item;
   }
 
-  async create({title}: CreateBaseCrudDto) {
+  async create({title}: CreateBaseDictionaryDto) {
     if (!title || title === '') {
       throw new BadRequestException('title shouldn\'t be empty');
     }
@@ -45,7 +45,7 @@ export class BaseCrudService<T extends BaseCrudEntity> {
     return await this.repository.save(item);
   }
 
-  async update(id: number, newData: UpdateBaseCrudDto) {
+  async update(id: number, newData: UpdateBaseDictionaryDto) {
     const relations = [];
     const item = await this.findOne(id, relations);
     Object.assign(item, newData);

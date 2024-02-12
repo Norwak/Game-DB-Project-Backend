@@ -1,13 +1,13 @@
 import { Body, Delete, Get, Inject, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
-import { BaseCrudService } from "./base-crud.service";
-import { BaseCrudEntity } from "./entities/base-crud.entity";
-import { CreateBaseCrudDto } from "./dtos/create-base-crud.dto";
-import { UpdateBaseCrudDto } from "./dtos/update-base-crud.dto";
+import { BaseDictionaryService } from "./base-dictionary.service";
+import { BaseDictionaryEntity } from "./entities/base-dictionary.entity";
+import { CreateBaseDictionaryDto } from "./dtos/create-base-dictionary.dto";
+import { UpdateBaseDictionaryDto } from "./dtos/update-base-dictionary.dto";
 import { AdminGuard } from "../../guards/admin.guard";
 
-export class BaseCrudController<T extends BaseCrudEntity> {
+export class BaseDictionaryController<T extends BaseDictionaryEntity> {
   constructor(
-    @Inject('service') private service: BaseCrudService<T>
+    @Inject('service') private service: BaseDictionaryService<T>
   ) {}
 
   @Get()
@@ -22,13 +22,13 @@ export class BaseCrudController<T extends BaseCrudEntity> {
 
   @Post()
   @UseGuards(AdminGuard)
-  async create(@Body() createDeveloperDto: CreateBaseCrudDto) {
+  async create(@Body() createDeveloperDto: CreateBaseDictionaryDto) {
     return await this.service.create(createDeveloperDto);
   }
 
   @Patch(':id')
   @UseGuards(AdminGuard)
-  async update(@Param('id') id: number, @Body() updateDeveloperDto: UpdateBaseCrudDto) {
+  async update(@Param('id') id: number, @Body() updateDeveloperDto: UpdateBaseDictionaryDto) {
     return await this.service.update(id, updateDeveloperDto);
   }
 

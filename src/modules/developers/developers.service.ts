@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Developer } from './entities/developer.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseCrudService } from '../../common/base-crud/base-crud.service';
+import { BaseDictionaryService } from '../../common/base-dictionary/base-dictionary.service';
 
 @Injectable()
-export class DevelopersService extends BaseCrudService<Developer> {
+export class DevelopersService extends BaseDictionaryService<Developer> {
   constructor(
     @InjectRepository(Developer) private developersRepository: Repository<Developer>
   ) {
