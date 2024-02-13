@@ -1,7 +1,7 @@
 import { IsIn, IsNumber } from "class-validator";
 import { dictionaryList } from "../../dictionary.list";
 
-export class AddToGameDto {
+export class RemoveFromGameDto {
   @IsNumber()
   gameId: number;
 

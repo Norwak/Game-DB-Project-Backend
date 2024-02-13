@@ -18,6 +18,7 @@ describe('BaseDictionaryController', () => {
       findOne: jest.fn(),
       create: jest.fn(),
       addtogame: jest.fn(),
+      removefromgame: jest.fn(),
       update: jest.fn(),
       remove: jest.fn()
     }
@@ -110,6 +111,24 @@ describe('BaseDictionaryController', () => {
     const metaIds = [1, 2];
 
     const result = await baseDictionaryController.addtogame({gameId, metaName, metaIds});
+    expect(result).toEqual({});
+  });
+
+
+
+  it('[removefromgame] should return empty object if meta removal was correct', async () => {
+    fakeBaseDictionaryService.removefromgame = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: [], developers: [], consoles: []
+      } as Game);
+    }
+
+    const gameId = 1;
+    const metaName = 'genres';
+    const metaIds = [1, 2];
+
+    const result = await baseDictionaryController.removefromgame({gameId, metaName, metaIds});
     expect(result).toEqual({});
   });
 

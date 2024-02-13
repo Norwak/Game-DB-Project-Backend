@@ -3,7 +3,7 @@ GET http://localhost:3000/developers
 
 
 ### Find a developer by id
-GET http://localhost:3000/developers/1
+GET http://localhost:3000/developers/3
 
 
 ### Create a developer
@@ -36,5 +36,15 @@ Content-Type: application/json
 {
   "gameId": 2,
   "metaName": "developers",
-  "metaIds": [1, 2]
+  "metaIds": [3, 2]
+}
+
+### Remove developers from a game
+PATCH http://localhost:3000/developers/removefromgame
+Content-Type: application/json
+
+{
+  "gameId": 2,
+  "metaName": "developers",
+  "metaIds": [3, 2]
 }

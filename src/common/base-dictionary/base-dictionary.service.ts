@@ -6,6 +6,7 @@ import { UpdateBaseDictionaryDto } from './dtos/update-base-dictionary.dto';
 import { AddToGameDto } from './dtos/add-to-game.dto';
 import { GamesService } from '../../modules/games/games.service';
 import { dictionaryList } from '../dictionary.list';
+import { RemoveFromGameDto } from './dtos/remove-from-game.dto';
 
 export class BaseDictionaryService<T extends BaseDictionaryEntity> {
   constructor(
@@ -66,7 +67,7 @@ export class BaseDictionaryService<T extends BaseDictionaryEntity> {
 
   async addtogame({gameId, metaName, metaIds}: AddToGameDto) {
     const game = await this.gamesService.findOne(gameId);
-   
+    
     if (!dictionaryList.includes(metaName)) {
       throw new BadRequestException('meta doesn\'t exist');
     };
@@ -84,7 +85,24 @@ export class BaseDictionaryService<T extends BaseDictionaryEntity> {
     return await this.gamesService.saveMeta(game);
   }
 
-  async removefromgame() {
+  async removefromgame({gameId, metaName, metaIds}: RemoveFromGameDto) {
+    const game = await this.gamesService.findOne(gameId);
+    
+    if (!dictionaryList.includes(metaName)) {
+      throw new BadRequestException('meta doesn\'t exist');
+    };
 
+    const gameMeta: BaseDictionaryEntity[] = game[metaName];
+    if (!gameMeta) {
+      throw new BadRequestException('game doesn\'t have this meta');
+    }
+
+    const metaItems = await this.findSome(metaIds);
+    
+    const ids = new Set(metaItems.map((metaItem: BaseDictionaryEntity) => metaItem.id));
+    game[metaName] = [...gameMeta.filter((metaItem: BaseDictionaryEntity) => !ids.has(metaItem.id))];
+    
+    
+    return await this.gamesService.saveMeta(game);
   }
 }

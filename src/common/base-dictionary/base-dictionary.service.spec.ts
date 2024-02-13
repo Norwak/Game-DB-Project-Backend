@@ -257,4 +257,62 @@ describe('BaseDictionaryService', () => {
     }
     await expect(baseDictionaryService.addtogame(addToGameDto)).rejects.toThrow(BadRequestException);
   });
+
+
+
+  it('[removefromgame] should append genres to a game', async () => {
+    fakeGamesService.findOne = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: [], developers: [], consoles: []
+      } as Game);
+    }
+
+    // add test data
+    fakeGamesService.saveMeta = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: testGenres, developers: [], consoles: []
+      } as Game);
+    }
+
+    let addToGameDto = {
+      gameId: 1,
+      metaName: 'genres',
+      metaIds: [1, 2],
+    }
+    let updatedGame = await baseDictionaryService.addtogame(addToGameDto);
+
+    // remove test data
+    fakeGamesService.saveMeta = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: [], developers: [], consoles: []
+      } as Game);
+    }
+
+    updatedGame = await baseDictionaryService.removefromgame(addToGameDto);
+    expect(updatedGame.title).toEqual("Castlevalia");
+    expect(updatedGame.genres).toEqual([]);
+    expect(updatedGame.genres.length).toEqual(0);
+  });
+
+  it('[removefromgame] should check if meta exists and the game has it', async () => {
+    fakeGamesService.findOne = () => {
+      return Promise.resolve({
+        id: 1, title: "Castlevalia", releaseDate: new Date('1995-12-17T03:24:00.000Z'),
+        genres: [], developers: []
+      } as Game);
+    }
+
+    let removeFromGameDto = {
+      gameId: 1, metaName: 'none', metaIds: [1],
+    }
+    await expect(baseDictionaryService.removefromgame(removeFromGameDto)).rejects.toThrow(BadRequestException);
+
+    removeFromGameDto = {
+      gameId: 1, metaName: 'console', metaIds: [1],
+    }
+    await expect(baseDictionaryService.removefromgame(removeFromGameDto)).rejects.toThrow(BadRequestException);
+  });
 });

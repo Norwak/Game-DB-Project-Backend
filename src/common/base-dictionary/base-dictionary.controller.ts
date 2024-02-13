@@ -5,6 +5,7 @@ import { CreateBaseDictionaryDto } from "./dtos/create-base-dictionary.dto";
 import { UpdateBaseDictionaryDto } from "./dtos/update-base-dictionary.dto";
 import { AdminGuard } from "../../guards/admin.guard";
 import { AddToGameDto } from "./dtos/add-to-game.dto";
+import { RemoveFromGameDto } from "./dtos/remove-from-game.dto";
 
 export class BaseDictionaryController<T extends BaseDictionaryEntity> {
   constructor(
@@ -31,6 +32,13 @@ export class BaseDictionaryController<T extends BaseDictionaryEntity> {
   @UseGuards(AdminGuard)
   async addtogame(@Body() addToGameDto: AddToGameDto) {
     await this.service.addtogame(addToGameDto);
+    return {};
+  }
+
+  @Patch('removefromgame')
+  @UseGuards(AdminGuard)
+  async removefromgame(@Body() removeFromGameDto: RemoveFromGameDto) {
+    await this.service.removefromgame(removeFromGameDto);
     return {};
   }
 
