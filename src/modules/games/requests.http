@@ -1,5 +1,17 @@
-### Find games by search query
+### Find all games
 GET http://localhost:3000/games
+
+
+### Search games
+GET http://localhost:3000/games/search?title=m&years[]=2019&developers[]=2&page=1
+
+
+### Find games by the first letter of alphabet
+GET http://localhost:3000/games/alphabet?q=m
+
+
+### Find games by search query
+GET http://localhost:3000/games?q=m
 
 
 ### Find a game by id
@@ -17,7 +29,7 @@ Content-Type: application/json
 
 
 ### Update a game
-PATCH http://localhost:3000/games/1
+PATCH http://localhost:3000/games/4
 Content-Type: application/json
 
 {
@@ -26,15 +38,5 @@ Content-Type: application/json
 
 
 ### Delete a game
-DELETE http://localhost:3000/games/1
+DELETE http://localhost:3000/games/5
 Content-Type: application/json
-
-
-### Add genres
-POST http://localhost:3000/games/addgenres
-Content-Type: application/json
-
-{
-  "gameId": 2,
-  "genreIds": [1, 2, 3]
-}

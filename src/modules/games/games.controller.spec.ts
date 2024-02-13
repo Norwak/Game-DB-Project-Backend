@@ -3,8 +3,6 @@ import { GamesController } from './games.controller';
 import { GamesService } from './games.service';
 import { Game } from './entities/game.entity';
 import { BadRequestException } from '@nestjs/common';
-import { GenresService } from '../genres/genres.service';
-import { Genre } from '../genres/entities/genre.entity';
 
 describe('GamesController', () => {
   let gamesController: GamesController;
@@ -40,12 +38,24 @@ describe('GamesController', () => {
 
 
 
+  it('[alphabet] should return an array with games that match search query', async () => {
+    fakeGamesService.find = () => {
+      return Promise.resolve([{id: 1, title: 'Castlevania', releaseDate: new Date('1995-12-01T05:05:05.000Z')} as Game]);
+    }
+
+    const game = await gamesController.find('c');
+    expect(game.length).toEqual(1);
+    expect(game[0].title).toEqual('Castlevania');
+  });
+
+
+
   it('[find] should return an array with games that match search query', async () => {
     fakeGamesService.find = () => {
       return Promise.resolve([{id: 1, title: 'Castlevania', releaseDate: new Date('1995-12-01T05:05:05.000Z')} as Game]);
     }
 
-    const game = await gamesController.find('Castle');
+    const game = await gamesController.find('levan');
     expect(game.length).toEqual(1);
     expect(game[0].title).toEqual('Castlevania');
   });

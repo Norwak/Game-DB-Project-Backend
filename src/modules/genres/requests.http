@@ -38,3 +38,14 @@ Content-Type: application/json
   "metaName": "genres",
   "metaIds": [1, 2]
 }
+
+
+### Remove genres from a game
+PATCH http://localhost:3000/genres/removefromgame
+Content-Type: application/json
+
+{
+  "gameId": 2,
+  "metaName": "genres",
+  "metaIds": [1, 2]
+}

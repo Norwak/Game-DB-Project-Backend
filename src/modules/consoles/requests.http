@@ -38,3 +38,14 @@ Content-Type: application/json
   "metaName": "consoles",
   "metaIds": [2]
 }
+
+
+### Remove consoles from a game
+PATCH http://localhost:3000/consoles/removefromgame
+Content-Type: application/json
+
+{
+  "gameId": 2,
+  "metaName": "consoles",
+  "metaIds": [1, 2]
+}

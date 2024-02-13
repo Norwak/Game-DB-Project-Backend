@@ -41,6 +41,37 @@ describe('GamesService', () => {
 
 
 
+  it('[alphabet] should return an array of games matching search query #1', async () => {
+    await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+
+    const games = await gamesService.alphabet('C');
+    expect(games.length).toEqual(1);
+    expect(games[0].title).toEqual('Castlevania');
+    expect(games[0].releaseDate.getUTCHours()).toEqual(3);
+  });
+
+  it('[alphabet] should return an array of games matching search query #2', async () => {
+    await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+    await gamesService.create({ title: 'Megaman', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+    await gamesService.create({ title: 'Mario', releaseDate: new Date('1995-12-17T03:40:00.000Z') });
+
+    const games = await gamesService.alphabet('m');
+    expect(games.length).toEqual(2);
+    expect(games[0].title).toEqual('Megaman');
+    expect(games[1].releaseDate.getMinutes()).toEqual(40);
+  });
+
+  it('[alphabet] should return an empty array on search query #3', async () => {
+    await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+    await gamesService.create({ title: 'Megaman', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+    await gamesService.create({ title: 'Mario', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+
+    const games = await gamesService.alphabet('e');
+    expect(games.length).toEqual(0);
+  });
+
+
+
   it('[find] should return an array of games matching search query #1', async () => {
     await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
 
@@ -67,6 +98,23 @@ describe('GamesService', () => {
     await gamesService.create({ title: 'Mario', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
 
     const games = await gamesService.find('q');
+    expect(games.length).toEqual(0);
+  });
+
+
+
+  it('[findSome] should return an array of games by ids', async () => {
+    await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+    await gamesService.create({ title: 'Megaman', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+    await gamesService.create({ title: 'Mario', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+
+    const games = await gamesService.findSome([1, 2, 3]);
+    expect(games.length).toEqual(3);
+    expect(games[2].title).toEqual('Mario');
+  });
+
+  it('[findSome] should return an empty array of games weren\'t found', async () => {
+    const games = await gamesService.findSome([1, 2, 3]);
     expect(games.length).toEqual(0);
   });
 
@@ -126,6 +174,12 @@ describe('GamesService', () => {
 
   it('[update] should throw a NotFoundException if game\'s id doesn\'t exist', async () => {
     await expect(gamesService.update(123, { title: '' })).rejects.toThrow(NotFoundException);
+  });
+
+  it('[update] should throw a BadRequestException if game\'s name already exists', async () => {
+    await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+    await gamesService.create({ title: 'Mario', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+    await expect(gamesService.update(2, {title: 'Castlevania'})).rejects.toThrow(BadRequestException);
   });
 
   
