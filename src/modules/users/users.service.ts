@@ -59,12 +59,12 @@ export class UsersService {
     const targetUser = await this.findOne(id);
     const currentUser = await this.findOne(session.userId);
 
-    if (currentUser.isAdmin || currentUser.id === targetUser.id) {
-      Object.assign(targetUser, newData);
-      return await this.usersRepository.save(targetUser);
-    } else {
+    if (!currentUser.isAdmin && currentUser.id !== targetUser.id) {
       throw new ForbiddenException();
     }
+
+    Object.assign(targetUser, newData);
+    return await this.usersRepository.save(targetUser);
   }
 
   async updateAdmin(id: number, value: boolean) {

@@ -34,9 +34,9 @@ PATCH http://localhost:3000/developers/addtogame
 Content-Type: application/json
 
 {
-  "gameId": 2,
+  "gameId": 3,
   "metaName": "developers",
-  "metaIds": [3, 2]
+  "metaIds": [2]
 }
 
 ### Remove developers from a game

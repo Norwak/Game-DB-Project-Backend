@@ -41,6 +41,37 @@ describe('GamesService', () => {
 
 
 
+  it('[search] should return an array of games matching a complex search query #1', async () => {
+    await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+
+    const games = await gamesService.search({title: 'ani'});
+    expect(games.length).toEqual(1);
+    expect(games[0].title).toEqual('Castlevania');
+    expect(games[0].releaseDate.getUTCHours()).toEqual(3);
+  });
+
+  it('[search] should return an array of games matching a complex search query #2', async () => {
+    for (let i = 1; i <= 100; i++) {
+      await gamesService.create({ title: `Castlevania ${i}`, releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+    }
+
+    const games = await gamesService.search({title: 'ani', page: 2});
+    expect(games.length).toEqual(30);
+    expect(games[0].id).toEqual(31);
+  });
+
+  it('[search] should return an array of games matching a complex search query #3', async () => {
+    await gamesService.create({ title: 'Mario', releaseDate: new Date('1997-12-17T03:40:00.000Z') });
+    await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
+    await gamesService.create({ title: 'Megaman', releaseDate: new Date('1996-12-17T03:24:00.000Z') });
+
+    const games = await gamesService.search({title: 'a', years: ['1995', '1996']});
+    expect(games.length).toEqual(2);
+    expect(games[0].title).toEqual('Castlevania');
+  });
+
+
+
   it('[alphabet] should return an array of games matching search query #1', async () => {
     await gamesService.create({ title: 'Castlevania', releaseDate: new Date('1995-12-17T03:24:00.000Z') });
 

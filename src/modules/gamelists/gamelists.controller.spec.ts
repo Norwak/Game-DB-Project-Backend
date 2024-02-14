@@ -6,27 +6,25 @@ import { BadRequestException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { GamesService } from '../games/games.service';
+import { Game } from '../games/entities/game.entity';
 
 describe('GamelistsController', () => {
   let gamelistsController: GamelistsController;
   let fakeGamelistsService: Partial<GamelistsService>;
   let fakeUsersService: Partial<UsersService>;
-  let fakeGamesService: Partial<GamesService>;
 
   beforeEach(async () => {
     fakeGamelistsService = {
       find: jest.fn(),
       findOne: jest.fn(),
+      userGamelists: jest.fn(),
+      gameGamelists: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       remove: jest.fn()
     }
 
     fakeUsersService = {
-      findOne: jest.fn(),
-    }
-
-    fakeGamesService = {
       findOne: jest.fn(),
     }
 
@@ -40,10 +38,6 @@ describe('GamelistsController', () => {
         {
           provide: UsersService,
           useValue: fakeUsersService,
-        },
-        {
-          provide: GamesService,
-          useValue: fakeGamesService,
         },
       ]
     }).compile();
@@ -81,6 +75,54 @@ describe('GamelistsController', () => {
 
 
 
+  it('[userGamelists] should return array of gamelists owned by user with given ID', async () => {
+    fakeGamelistsService.userGamelists = () => {
+      return Promise.resolve([
+        {
+          id: 1,
+          title: 'My list',
+          games: [
+            {id: 4, title: 'Mario'} as Game,
+            {id: 3, title: 'Megaman'} as Game,
+            {id: 2, title: 'Castlevania'} as Game,
+            {id: 1, title: 'Battletoads'} as Game,
+          ]
+        } as Gamelist,
+      ]);
+    }
+
+    const userId = 1;
+    const gamelists = await gamelistsController.userGamelists(userId);
+    expect(gamelists.length).toEqual(1);
+    expect(gamelists[0].games.length).toEqual(4);
+  });
+
+
+
+  it('[gameGamelists] should return array of gamelists that have a game with given ID', async () => {
+    fakeGamelistsService.userGamelists = () => {
+      return Promise.resolve([
+        {
+          id: 1,
+          title: 'My list',
+          games: [
+            {id: 4, title: 'Mario'} as Game,
+            {id: 3, title: 'Megaman'} as Game,
+            {id: 2, title: 'Castlevania'} as Game,
+            {id: 1, title: 'Battletoads'} as Game,
+          ]
+        } as Gamelist,
+      ]);
+    }
+
+    const gameId = 1;
+    const gamelists = await gamelistsController.gameGamelists(gameId);
+    expect(gamelists.length).toEqual(1);
+    expect(gamelists[0].games.length).toEqual(4);
+  });
+
+
+
   it('[create] should return a gamelist back with assigned id', async () => {
     const user = {
       id: 1,
@@ -95,7 +137,7 @@ describe('GamelistsController', () => {
       return Promise.resolve({id: 1, title: 'My list', user} as Gamelist);
     }
 
-    const session = {userId: 1};
+    const session: Record<string, any> = {userId: 1};
     const gamelist = await gamelistsController.create({title: 'My list'}, session);
     expect(gamelist).toHaveProperty('id');
     expect(gamelist.user.id).toEqual(1);
@@ -117,19 +159,21 @@ describe('GamelistsController', () => {
       return Promise.resolve({id: 1, title: 'My list'} as Gamelist);
     }
 
-    const updatedGamelist = await gamelistsController.update(1, {title: 'My list'});
+    const session: Record<string, any> = {userId: 1};
+    const updatedGamelist = await gamelistsController.update(1, {title: 'My list'}, session);
     expect(updatedGamelist.id).toEqual(1);
     expect(updatedGamelist.title).toEqual('My list');
   });
 
 
 
-  it('[remove] should delete a develper by id and return gamelist object back without id', async () => {
+  it('[remove] should delete a gamelist by id and return gamelist object back without id', async () => {
     fakeGamelistsService.remove = () => {
       return Promise.resolve({title: 'My list'} as Gamelist);
     }
 
-    const deletedGamelist = await gamelistsController.remove(1);
+    const session: Record<string, any> = {userId: 1};
+    const deletedGamelist = await gamelistsController.remove(1, session);
     expect(deletedGamelist.title).toEqual('My list');
     expect(deletedGamelist).not.toHaveProperty('id');
   });

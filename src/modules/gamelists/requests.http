@@ -1,9 +1,13 @@
-### Find gamelists by search query
+### Find all gamelists
 GET http://localhost:3000/gamelists
 
 
+### Find gamelists by search query
+GET http://localhost:3000/gamelists?q=s
+
+
 ### Find a gamelist by id
-GET http://localhost:3000/gamelists/2
+GET http://localhost:3000/gamelists/1
 
 
 ### Create a gamelist
@@ -30,10 +34,20 @@ Content-Type: application/json
 
 
 ### Add games to a gamelist
-POST http://localhost:3000/gamelists/addGames
+PATCH http://localhost:3000/gamelists/addgames
 Content-Type: application/json
 
 {
-  "gamelistId": 2,
-  "gameIds": [1, 2]
+  "gamelistId": 1,
+  "gameIds": [2, 3]
+}
+
+
+### Remove games from a gamelist
+PATCH http://localhost:3000/gamelists/removegames
+Content-Type: application/json
+
+{
+  "gamelistId": 1,
+  "gameIds": [2, 3]
 }

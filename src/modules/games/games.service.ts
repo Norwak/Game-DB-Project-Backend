@@ -23,24 +23,17 @@ export class GamesService {
       .leftJoinAndSelect('game.consoles', 'console')
       .where('1 = 1');
 
-    if (title) {
+    if (title)
       stmt.andWhere('game.title LIKE :title', {title: `%${title}%`});
-    }
-    if (years) {
+    if (years)
       stmt.andWhere(`strftime("%Y", game.releaseDate) IN (:...years)`, {years})
-    }
-    if (genres) {
-      genres = genres.map(Number);
+    if (genres)
       stmt.andWhere('genre.id IN (:...genres)', {genres})
-    }
-    if (developers) {
-      developers = developers.map(Number);
+    if (developers)
       stmt.andWhere('developer.id IN (:...developers)', {developers})
-    }
-    if (consoles) {
-      consoles = consoles.map(Number);
+    if (consoles)
       stmt.andWhere('console.id IN (:...consoles)', {consoles})
-    }
+
     return stmt
       .skip((page - 1) * 30)
       .take(30)

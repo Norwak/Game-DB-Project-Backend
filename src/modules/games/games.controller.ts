@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Search, UseGuards } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { CreateGameDto } from './dtos/create-game.dto';
 import { UpdateGameDto } from './dtos/update-game.dto';
@@ -6,6 +6,7 @@ import { AdminGuard } from '../../guards/admin.guard';
 import { Serialize } from '../../interceptors/serialize.interceptor';
 import { GameDto } from './dtos/game.dto';
 import { SearchGamesDto } from './dtos/search-games.dto';
+import { SearchDto } from './dtos/search.dto';
 
 @Controller('games')
 @Serialize(GameDto)
@@ -20,6 +21,7 @@ export class GamesController {
   }
 
   @Get('search')
+  @Serialize(SearchDto)
   async search(@Query() query: SearchGamesDto) {
     return await this.gamesService.search(query);
   }

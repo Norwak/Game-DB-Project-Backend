@@ -8,7 +8,7 @@ export class SearchGamesDto {
   @IsArray()
   @IsNumberString({}, {each: true})
   @IsOptional()
-  years?: number[];
+  years?: string[];
 
   @IsArray()
   @IsNumberString({}, {each: true})
@@ -28,5 +28,5 @@ export class SearchGamesDto {
   @IsNumber()
   @IsOptional()
   @Min(1)
-  page: number;
+  page?: number;
 }
