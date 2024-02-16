@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import 'dotenv/config'
 import { Developer } from './modules/developers/entities/developer.entity';
 import { Gamelist } from './modules/gamelists/entities/gamelist.entity';
@@ -16,6 +16,7 @@ import { GenresModule } from './modules/genres/genres.module';
 import { UsersModule } from './modules/users/users.module';
 import { ConsolesModule } from './modules/consoles/consoles.module';
 import { Console } from './modules/consoles/entities/console.entity';
+import { DeleteImageOnErrorFilter } from './filters/delete-image-on-error.filter';
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -38,6 +39,10 @@ const cookieSession = require('cookie-session');
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_FILTER,
+      useValue: new DeleteImageOnErrorFilter(),
+    },
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({

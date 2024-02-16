@@ -17,6 +17,9 @@ export class GameDto {
   releaseDate: Date;
 
   @Expose()
+  imagePath: string;
+
+  @Expose()
   @Type(() => DeveloperDto)
   developers: Developer[];
 

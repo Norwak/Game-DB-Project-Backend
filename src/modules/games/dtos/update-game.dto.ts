@@ -8,4 +8,7 @@ export class UpdateGameDto {
   @IsDate()
   @IsOptional()
   releaseDate: Date;
+
+  @IsOptional()
+  imagePath: string;
 }

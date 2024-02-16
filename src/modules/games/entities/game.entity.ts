@@ -15,6 +15,9 @@ export class Game {
   @Column()
   releaseDate: Date;
 
+  @Column()
+  imagePath: string = '/upload/no-image.png';
+
   @ManyToMany(type => Gamelist, gamelist => gamelist.games)
   gamelists: Gamelist[];
 

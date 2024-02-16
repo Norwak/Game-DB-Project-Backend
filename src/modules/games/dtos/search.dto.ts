@@ -9,4 +9,7 @@ export class SearchDto {
 
   @Expose()
   releaseDate: Date;
+
+  @Expose()
+  imagePath: string;
 }

@@ -15,7 +15,7 @@ GET http://localhost:3000/games?q=m
 
 
 ### Find a game by id
-GET http://localhost:3000/games/2
+GET http://localhost:3000/games/6
 
 
 ### Create a game
@@ -29,7 +29,7 @@ Content-Type: application/json
 
 
 ### Update a game
-PATCH http://localhost:3000/games/4
+PATCH http://localhost:3000/games/1
 Content-Type: application/json
 
 {
@@ -40,3 +40,35 @@ Content-Type: application/json
 ### Delete a game
 DELETE http://localhost:3000/games/5
 Content-Type: application/json
+
+
+### Create a game with image
+POST http://localhost:3000/games
+Content-Type: multipart/form-data; boundary=MfnBoundry
+
+--MfnBoundry
+Content-Disposition: form-data; name="image"; filename="blue-vector-pattern.jpg"
+Content-Type: image/jpeg
+
+< ./img/blue-vector-pattern.jpg
+--MfnBoundry
+Content-Disposition: form-data; name="title"
+
+Battletoads
+--MfnBoundry
+Content-Disposition: form-data; name="releaseDate"
+
+2019-07-04T13:33:03.000Z
+--MfnBoundry--
+
+
+### Upload image with validator exception
+PATCH http://localhost:3000/games/6
+Content-Type: multipart/form-data; boundary=MfnBoundry
+
+--MfnBoundry
+Content-Disposition: form-data; name="image"; filename="blue-vector-pattern.jpg"
+Content-Type: image/jpeg
+
+< ./img/blue-vector-pattern.jpg
+--MfnBoundry--

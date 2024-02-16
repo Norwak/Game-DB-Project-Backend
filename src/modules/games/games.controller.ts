@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Search, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { CreateGameDto } from './dtos/create-game.dto';
 import { UpdateGameDto } from './dtos/update-game.dto';
@@ -7,6 +7,9 @@ import { Serialize } from '../../interceptors/serialize.interceptor';
 import { GameDto } from './dtos/game.dto';
 import { SearchGamesDto } from './dtos/search-games.dto';
 import { SearchDto } from './dtos/search.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { mutlerOptions } from '../../common/mutler-options';
+import { imageRequirements } from '../../common/image-requirements';
 
 @Controller('games')
 @Serialize(GameDto)
@@ -38,13 +41,21 @@ export class GamesController {
 
   @Post()
   @UseGuards(AdminGuard)
-  async create(@Body() createGameDto: CreateGameDto) {
+  @UseInterceptors(FileInterceptor('image', mutlerOptions))
+  async create(@Body() createGameDto: CreateGameDto, @UploadedFile(imageRequirements) image?: Express.Multer.File) {
+    if (image) {
+      createGameDto.imagePath = image.destination + image.filename;
+    }
     return await this.gamesService.create(createGameDto);
   }
 
   @Patch(':id')
   @UseGuards(AdminGuard)
-  async update(@Param('id') id: number, @Body() updateGameDto: Partial<UpdateGameDto>) {
+  @UseInterceptors(FileInterceptor('image', mutlerOptions))
+  async update(@Param('id') id: number, @Body() updateGameDto: Partial<UpdateGameDto>, @UploadedFile(imageRequirements) image?: Express.Multer.File) {
+    if (image) {
+      updateGameDto.imagePath = image.destination + image.filename;
+    }
     return await this.gamesService.update(id, updateGameDto);
   }
 

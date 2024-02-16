@@ -20,7 +20,7 @@ Content-Type: application/json
 
 
 ### Update a gamelist
-PATCH http://localhost:3000/gamelists/1
+PATCH http://localhost:3000/gamelists/2
 Content-Type: application/json
 
 {
@@ -38,7 +38,7 @@ PATCH http://localhost:3000/gamelists/addgames
 Content-Type: application/json
 
 {
-  "gamelistId": 1,
+  "gamelistId": 2,
   "gameIds": [2, 3]
 }
 
@@ -48,6 +48,6 @@ PATCH http://localhost:3000/gamelists/removegames
 Content-Type: application/json
 
 {
-  "gamelistId": 1,
+  "gamelistId": 2,
   "gameIds": [2, 3]
 }

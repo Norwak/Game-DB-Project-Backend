@@ -17,6 +17,9 @@ export class SaveGameMetaDto {
   @IsDate()
   releaseDate: Date;
 
+  @IsString()
+  imagePath: string;
+
   @Type(() => ConsoleDto)
   consoles: Console[];
 

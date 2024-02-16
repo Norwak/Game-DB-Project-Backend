@@ -71,7 +71,7 @@ export class GamesService {
     return game;
   }
 
-  async create({ title, releaseDate }: CreateGameDto) {
+  async create({ title, releaseDate, imagePath }: CreateGameDto) {
     if (!title || title === '') {
       throw new BadRequestException('title shouldn\'t be empty');
     }
@@ -89,7 +89,7 @@ export class GamesService {
       throw new BadRequestException('game already exists');
     }
 
-    const game = this.gamesRepository.create({title, releaseDate});
+    const game = this.gamesRepository.create({title, releaseDate, imagePath});
     return await this.gamesRepository.save(game);
   }
 
